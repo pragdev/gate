@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <servlet>
+        <servlet-name>Groovy</servlet-name>
+        <servlet-class>groovy.servlet.GroovyServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>RemoteController</servlet-name>
+        <servlet-class>goauth.RemoteController</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RemoteController</servlet-name>
+        <url-pattern>remotecontroller</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TokenController</servlet-name>
+        <servlet-class>goauth.TokenController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>TokenController</servlet-name>
+        <url-pattern>token</url-pattern>
+    </servlet-mapping>
+
+</web-app>
