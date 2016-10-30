@@ -26,6 +26,13 @@ When(~/^the body "([^"]*)" contains the parameters:$/) { String contentType, Dat
   response = restClient."$request.method"(path: request.path, body: body, requestContentType: contentType)
 }
 
+And(~/^the request uses the basic authentication scheme$/) { ->
+  restClient.auth.basic username, password
+
+  def encodedCredentials = "$username:$password".bytes.encodeBase64().toString()
+  restClient.setHeaders([Authorization: "Basic $encodedCredentials"])
+}
+
 Then(~/^the Authentication Server should respond OK$/) { ->
   assert response.status == 200
 }
@@ -36,7 +43,6 @@ Then(~/^should be non cachable$/) { ->
 
 Then(~/^the content type should be JSON$/) { ->
   assert response.contentType == 'application/json'
-
 }
 
 Then(~/^the body should be:$/) { expectedBody ->
@@ -51,4 +57,10 @@ Then(~/^the body should be:$/) { expectedBody ->
   assert responseBody.token_type == expectedBody.token_type
 }
 
+Given(~/^valid Client credentials:$/) { table ->
+  def credentials = table.asMaps(String, String).first()
+  username = credentials.username
+  password = credentials.password
 
+  store new Credentials(username, password)
+}

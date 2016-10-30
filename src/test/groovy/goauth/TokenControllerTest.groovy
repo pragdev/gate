@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class TokenControllerTest extends Specification {
-  TokenController controller = new TokenController()
+  TokenController controller
   HttpServletResponse response
   private responseBody
 
@@ -16,7 +16,7 @@ class TokenControllerTest extends Specification {
     def writer = new PrintWriter(responseBody)
 
     controller = new TokenController(security: Mock(Security) {
-      authenticate(_ as Credentials) >> new AccessToken()
+      authenticate(_ as Map, _ as Credentials) >> new AccessToken()
     })
     response = Mock(HttpServletResponse) {
       getWriter() >> writer
@@ -25,7 +25,11 @@ class TokenControllerTest extends Specification {
 
   def "the new token response should be not cacheable"() {
     when:
-    controller.doPost(Mock(HttpServletRequest), response)
+    def request = Mock(HttpServletRequest) {
+      getParameter('username') >> 'antonio'
+      getParameter('password') >> 'test'
+    }
+    controller.doPost(request, response)
 
     then:
     1 * response.setHeader("Cache-Control", "no-store")
@@ -34,7 +38,11 @@ class TokenControllerTest extends Specification {
 
   def "the new token response should be in a JSON format"() {
     when:
-    controller.doPost(Mock(HttpServletRequest), response)
+    def request = Mock(HttpServletRequest) {
+      getParameter('username') >> 'antonio'
+      getParameter('password') >> 'test'
+    }
+    controller.doPost(request, response)
 
     then:
     1 * response.setContentType("application/json")
@@ -42,7 +50,11 @@ class TokenControllerTest extends Specification {
 
   def "should generate a new token when credentials are valid"() {
     when:
-    controller.doPost(Mock(HttpServletRequest), response)
+    def request = Mock(HttpServletRequest) {
+      getParameter('username') >> 'antonio'
+      getParameter('password') >> 'test'
+    }
+    controller.doPost(request, response)
 
     then:
     def json = parse(responseBody.toString())
@@ -59,5 +71,61 @@ class TokenControllerTest extends Specification {
   def parse(json) {
     new JsonSlurper().parseText(json)
   }
+
+  def "should extract credentials from the request body"() {
+    given:
+
+    HttpServletRequest request = Mock(HttpServletRequest) {
+      getParameter('username') >> 'antonio'
+      getParameter('password') >> 'test'
+    }
+
+    when:
+    def credentials = controller.extractCredentialsFromBody request
+
+    then:
+    credentials == new Credentials('antonio', 'test')
+  }
+
+  def "should not extract any credentials from the request body if params are missing"() {
+    given:
+
+    HttpServletRequest request = Mock(HttpServletRequest) {
+      getParameter('username') >> null
+      getParameter('password') >> null
+    }
+
+    expect:
+    !controller.extractCredentialsFromBody(request)
+  }
+
+  def "should extract credentials from the Authorization header"() {
+    given:
+
+    HttpServletRequest request = Mock(HttpServletRequest) {
+      getHeader('Authorization') >> 'Basic bXlhcHA6dGVzdA=='
+    }
+
+    when:
+    def credentials = controller.extractCredentialsFromHeader request
+
+    then:
+    credentials == new Credentials('myapp', 'test')
+  }
+
+  def "should not extract any credentials from the Authorization header if params are missing"() {
+    given:
+
+    HttpServletRequest request = Mock(HttpServletRequest) {
+      getHeader('Authorization') >> header
+    }
+
+    expect:
+    !controller.extractCredentialsFromHeader(request)
+
+    where:
+    header << ['', null, 'Basic wrong9hjformat', 'Basic ', 'wrong']
+  }
+
 
 }

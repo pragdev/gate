@@ -1,6 +1,5 @@
 package goauth
 
-import com.google.appengine.api.datastore.DatastoreServiceFactory
 import groovy.json.JsonBuilder
 import groovy.util.logging.Log
 
@@ -18,18 +17,18 @@ public class TokenController extends HttpServlet {
   @Override
   void init(ServletConfig config) throws ServletException {
     super.init(config)
-
     security = config.servletContext.getAttribute('security')
   }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    def credentials = new Credentials(request.getParameter('username'), request.getParameter('password'))
-    def token = security.authenticate credentials
+    def credentials = extractCredentialsFromBody request
+    def clientCredentials = extractCredentialsFromHeader request
+    def token = security.authenticate credentials, flow: request.getParameter('grant_type'), clientCredentials: clientCredentials
 
     response.setHeader('Cache-Control', 'no-store')
     response.setHeader('Pragma', 'no-cache')
 
-    response.setContentType('application/json')
+    response.contentType = 'application/json'
 
     def builder = new JsonBuilder()
     builder {
@@ -40,4 +39,20 @@ public class TokenController extends HttpServlet {
     response.writer << builder.toString()
   }
 
+  Credentials extractCredentialsFromBody(HttpServletRequest request) {
+    def username = request.getParameter('username')
+    def password = request.getParameter('password')
+
+    !username || !password ? null : new Credentials(username, password)
+  }
+
+  Credentials extractCredentialsFromHeader(HttpServletRequest request) {
+    def header = request.getHeader('Authorization')?.minus 'Basic '
+    if (!header) return null
+
+    def decoded = new String(header.decodeBase64())
+    def (username, password) = decoded.tokenize(':')
+
+    !username || !password ? null : new Credentials(username, password)
+  }
 }
