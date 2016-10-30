@@ -13,6 +13,14 @@ import javax.servlet.http.HttpServletResponse
 public class TokenController extends HttpServlet {
 
   Security security
+  private Map<AuthenticationFlow, Closure> credentialsExtractors
+
+  TokenController() {
+    this.credentialsExtractors = [
+      (AuthenticationFlow.CLIENT_CREDENTIALS): this.&extractCredentialsFromHeader,
+      (AuthenticationFlow.PASSWORD)          : this.&extractCredentialsFromBody
+    ]
+  }
 
   @Override
   void init(ServletConfig config) throws ServletException {
@@ -21,9 +29,10 @@ public class TokenController extends HttpServlet {
   }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    def credentials = extractCredentialsFromBody request
-    def clientCredentials = extractCredentialsFromHeader request
-    def token = security.authenticate credentials, flow: request.getParameter('grant_type'), clientCredentials: clientCredentials
+    AuthenticationFlow flow = request.getParameter('grant_type').toUpperCase()
+    def credentials = credentialsExtractors[flow](request)
+
+    def token = security.authenticate credentials
 
     response.setHeader('Cache-Control', 'no-store')
     response.setHeader('Pragma', 'no-cache')

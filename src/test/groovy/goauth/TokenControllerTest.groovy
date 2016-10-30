@@ -16,7 +16,7 @@ class TokenControllerTest extends Specification {
     def writer = new PrintWriter(responseBody)
 
     controller = new TokenController(security: Mock(Security) {
-      authenticate(_ as Map, _ as Credentials) >> new AccessToken()
+      authenticate(_ as Credentials) >> new AccessToken()
     })
     response = Mock(HttpServletResponse) {
       getWriter() >> writer
@@ -24,36 +24,54 @@ class TokenControllerTest extends Specification {
   }
 
   def "the new token response should be not cacheable"() {
-    when:
-    def request = Mock(HttpServletRequest) {
-      getParameter('username') >> 'antonio'
-      getParameter('password') >> 'test'
+    given:
+    def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
+
+    def security = Mock(Security) {
+      authenticate(*_) >> new AccessToken()
     }
+    controller.security = security
+
+    when:
     controller.doPost(request, response)
 
     then:
     1 * response.setHeader("Cache-Control", "no-store")
     1 * response.setHeader("Pragma", "no-cache")
+
+    where:
+    grantType << AuthenticationFlow.values()*.toString()
   }
 
   def "the new token response should be in a JSON format"() {
-    when:
-    def request = Mock(HttpServletRequest) {
-      getParameter('username') >> 'antonio'
-      getParameter('password') >> 'test'
+    given:
+    def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
+
+    def security = Mock(Security) {
+      authenticate(*_) >> new AccessToken()
     }
+    controller.security = security
+
+    when:
     controller.doPost(request, response)
 
     then:
     1 * response.setContentType("application/json")
+
+    where:
+    grantType << AuthenticationFlow.values()*.toString()
   }
 
   def "should generate a new token when credentials are valid"() {
-    when:
-    def request = Mock(HttpServletRequest) {
-      getParameter('username') >> 'antonio'
-      getParameter('password') >> 'test'
+    given:
+    def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
+
+    def security = Mock(Security) {
+      authenticate(*_) >> new AccessToken()
     }
+    controller.security = security
+
+    when:
     controller.doPost(request, response)
 
     then:
@@ -62,6 +80,9 @@ class TokenControllerTest extends Specification {
     !json.access_token.isEmpty()
     json.token_type == 'bearer'
     json.expires_in == 3600
+
+    where:
+    grantType << AuthenticationFlow.values()*.toString()
   }
 
   def prettyJson(String json) {
