@@ -6,11 +6,8 @@ enum AuthenticationFlow { CLIENT_CREDENTIALS, PASSWORD }
 
 @Log
 class Security {
-  private CredentialsRepository credentialsRepository
-
-  Security(CredentialsRepository credentialsRepository) {
-    this.credentialsRepository = credentialsRepository
-  }
+  CredentialsRepository credentialsRepository
+  ClientRepository clientsRepository
 
   AccessToken authenticate(Credentials credentials) throws InvalidCredentialsException {
     if (!credentialsRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
@@ -19,6 +16,13 @@ class Security {
     if (storedCredentials != credentials) throw new InvalidCredentialsException(credentials)
 
     credentialsRepository.store new AccessToken()
+  }
+
+  Client register(Client client) {
+    client.id = UUID.randomUUID().toString()
+    client.secret = UUID.randomUUID().toString()
+
+    clientsRepository.store client
   }
 
 }

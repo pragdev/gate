@@ -6,7 +6,7 @@ import spock.lang.Specification
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class TokenControllerTest extends Specification {
+class TokenControllerSpec extends Specification {
   TokenController controller
   HttpServletResponse response
   private responseBody
@@ -75,7 +75,7 @@ class TokenControllerTest extends Specification {
     controller.doPost(request, response)
 
     then:
-    def json = parse(responseBody.toString())
+    def json = parse responseBody.toString()
     json.access_token != null
     !json.access_token.isEmpty()
     json.token_type == 'bearer'
@@ -95,7 +95,6 @@ class TokenControllerTest extends Specification {
 
   def "should extract credentials from the request body"() {
     given:
-
     HttpServletRequest request = Mock(HttpServletRequest) {
       getParameter('username') >> 'antonio'
       getParameter('password') >> 'test'

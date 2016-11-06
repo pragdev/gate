@@ -45,7 +45,7 @@ dependencies {
       "com.google.appengine:appengine-tools-sdk:$gaeVersion"
     testCompile "com.google.appengine:appengine-api-stubs:$gaeVersion"
     testCompile "com.google.appengine:appengine-testing:$gaeVersion"
-
+    testCompile 'com.google.appengine:appengine-remote-api:1.9.44'
 
     // We use the latest groovy 2.x version for building this library
     compile 'org.codehaus.groovy:groovy-all:2.4.7'

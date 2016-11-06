@@ -12,13 +12,13 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit
 
 class CredentialsRepositorySpec extends Specification {
 
-  LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-  @Subject def repository = new CredentialsRepository()
+  @Subject def repository
+  LocalServiceTestHelper helper
   DatastoreService datastoreService
 
   def setup() {
     helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-    datastoreService = DatastoreServiceFactory.getDatastoreService()
+    datastoreService = DatastoreServiceFactory.datastoreService
     repository = new CredentialsRepository(datastore: this.datastoreService)
 
     helper.setUp();

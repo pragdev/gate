@@ -1,7 +1,7 @@
 import cucumber.api.DataTable
-import cucumber.api.PendingException
 import cucumber.api.groovy.EN
 import cucumber.api.groovy.Hooks
+import goauth.AccessToken
 import goauth.Credentials
 import groovy.json.JsonSlurper
 
@@ -63,4 +63,22 @@ Given(~/^valid Client credentials:$/) { table ->
   password = credentials.password
 
   store new Credentials(username, password)
+}
+
+Given(~/^a authentication server administrator has already obtained an access token$/) { ->
+  store new AccessToken()
+}
+
+When(~/^the admin makes a "([^"]*)" request to the Authorization Server at the path "([^"]*)" with body$/) { String method, String path, String body ->
+  response = restClient."${method.toLowerCase()}"(path: path, body: body, requestContentType: 'application/json')
+}
+
+Then(~/^the authorization server response should be$/) { expectedBody ->
+  def slurper = new JsonSlurper()
+  expectedBody = slurper.parseText(expectedBody)
+  def responseBody = response.data
+
+  assert responseBody.id.matches(/[A-z0-9-]+/)
+  assert responseBody.secret.matches(/[A-z0-9-]+/)
+
 }
