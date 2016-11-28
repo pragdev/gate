@@ -79,3 +79,27 @@ cucumber {
       "classpath:io.jdev.geb.cucumber.steps.groovy.en"
     ]
 }
+
+tasks.cucumber {
+    appengineRun {
+        daemon = true
+        disableUpdateCheck = true
+    }
+
+    appengineRun.mustRunAfter classes, processResources, compileJava, compileGroovy
+
+    dependsOn appengineRun
+    finalizedBy appengineStop
+}
+
+tasks.check {
+    appengineRun {
+        outputs.upToDateWhen { false }
+    }
+
+    appengineRun {
+        daemon = true
+        disableUpdateCheck = true
+    }
+    dependsOn tasks.cucumber
+}

@@ -15,7 +15,6 @@ class MyWorld {
     .useDevelopmentServerCredential()
 
   MyWorld() {
-    println "called "*10
     restClient = new RESTClient('http://localhost:8080/')
 
     datastoreService = DatastoreServiceFactory.datastoreService
