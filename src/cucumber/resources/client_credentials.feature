@@ -24,7 +24,7 @@ Feature: The client credentials (or other forms of client authentication) can
       | grant_type         |
       | client_credentials |
     Then the Authentication Server should respond OK
-    And should be non cachable
+    And should be non cacheable
     And the content type should be JSON
     And the body should be:
     """

@@ -1,4 +1,5 @@
 import cucumber.api.DataTable
+import cucumber.api.PendingException
 import cucumber.api.groovy.EN
 import cucumber.api.groovy.Hooks
 import goauth.AccessToken
@@ -37,7 +38,7 @@ Then(~/^the Authentication Server should respond OK$/) { ->
   assert response.status == 200
 }
 
-Then(~/^should be non cachable$/) { ->
+Then(~/^should be non cacheable$/) { ->
   assert response.headers['Cache-Control'].value == 'no-store'
 }
 
