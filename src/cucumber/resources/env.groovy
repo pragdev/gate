@@ -9,7 +9,7 @@ installer.install MyWorld.remoteOptions
 
 
 World {
-  new MyWorld()
+    new MyWorld()
 }
 
 Before { Scenario scenario ->

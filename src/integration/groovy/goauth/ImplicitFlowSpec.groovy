@@ -1,9 +1,9 @@
 package goauth
 
 import groovyx.net.http.RESTClient
-import support.RemoteBackend
 import spock.lang.AutoCleanup
 import spock.lang.Specification
+import support.RemoteBackend
 
 class ImplicitFlowSpec extends Specification {
 

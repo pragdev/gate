@@ -21,7 +21,6 @@ Feature: Before initiating the protocol, the client registers with the
   acceptance of legal terms).
 
 
-
   Scenario: A client is registered on the platform
     Given a authentication server administrator has already obtained an access token
     When the admin makes a "POST" request to the Authorization Server at the path "/clients" with body

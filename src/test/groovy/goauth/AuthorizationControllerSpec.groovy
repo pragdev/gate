@@ -7,13 +7,12 @@ import spock.lang.Subject
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
-import static javax.servlet.http.HttpServletResponse.SC_OK
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
+import static javax.servlet.http.HttpServletResponse.*
 
 class AuthorizationControllerSpec extends Specification {
 
-    @Subject AuthorizationController authorizationController = new AuthorizationController()
+    @Subject
+    AuthorizationController authorizationController = new AuthorizationController()
     def response = Mock HttpServletResponse
     def request = Mock HttpServletRequest
     StringWriter responseBody
@@ -60,7 +59,9 @@ class AuthorizationControllerSpec extends Specification {
         given:
         request.getHeader(_) >> authHeader
         authorizationController.security.findClientBy('myid') >> new Client()
-        authorizationController.security.identifyResourceOwnerBy(_) >> { throw new InvalidCredentialsException(new Credentials())}
+        authorizationController.security.identifyResourceOwnerBy(_) >> {
+            throw new InvalidCredentialsException(new Credentials())
+        }
 
         when:
         authorizationController.doGet(request, response)

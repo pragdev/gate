@@ -2,7 +2,6 @@ package goauth
 
 import com.google.appengine.api.datastore.DatastoreService
 import com.google.appengine.api.datastore.DatastoreServiceFactory
-import com.google.appengine.tools.remoteapi.RemoteApiInstaller
 import com.google.appengine.tools.remoteapi.RemoteApiOptions
 import groovyx.net.http.RESTClient
 

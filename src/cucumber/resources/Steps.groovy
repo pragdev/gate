@@ -1,5 +1,4 @@
 import cucumber.api.DataTable
-import cucumber.api.PendingException
 import cucumber.api.groovy.EN
 import cucumber.api.groovy.Hooks
 import goauth.AccessToken
@@ -34,7 +33,7 @@ When(~/^the client redirects the resource owner to the Authorization Server at t
 
 When(~/^the body "([^"]*)" contains the parameters:$/) { String contentType, DataTable table ->
     def params = table.asMaps(String, String).first()
-     response = restClient."$request.method"(path: request.path, body: params, requestContentType: contentType)
+    response = restClient."$request.method"(path: request.path, body: params, requestContentType: contentType)
 }
 
 When(~/^the query string contains the parameters:$/) { DataTable table ->

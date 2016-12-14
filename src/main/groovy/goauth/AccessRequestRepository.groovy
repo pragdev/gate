@@ -12,7 +12,7 @@ class AccessRequestRepository {
     ClientRepository clientsRepository
 
     AccessRequest store(AccessRequest accessRequest) {
-        if(!accessRequest.id) throw new IllegalArgumentException('An accessRequest id is required')
+        if (!accessRequest.id) throw new IllegalArgumentException('An accessRequest id is required')
 
         Entity entity = new Entity(asKey(accessRequest.id, 'AccessRequest'))
         entity.setProperty('id', accessRequest.id)

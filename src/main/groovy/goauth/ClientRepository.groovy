@@ -10,7 +10,7 @@ class ClientRepository {
     DatastoreService datastore = DatastoreServiceFactory.datastoreService
 
     Client store(Client client) {
-        if(!client.id) throw new IllegalArgumentException('A client id is required')
+        if (!client.id) throw new IllegalArgumentException('A client id is required')
 
         Entity entity = new Entity(asKey(client.id, 'Client'))
         entity.setProperty('id', client.id)

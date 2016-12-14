@@ -36,7 +36,7 @@ class Security {
     }
 
     ResourceOwner identifyResourceOwnerBy(Credentials credentials) {
-        if(!credentials || credentials.incomplete) throw new InvalidCredentialsException(credentials)
+        if (!credentials || credentials.incomplete) throw new InvalidCredentialsException(credentials)
 
         Credentials storedCredentials = credentialsRepository.findBy credentials.username
         if (storedCredentials != credentials) throw new InvalidCredentialsException(credentials)
@@ -50,8 +50,8 @@ class Security {
     }
 
     AccessToken grantAccess(AccessRequest accessRequest) {
-        if( !(accessRequest.status in [GRANTED, DENIED]) ) throw new InvalidStatusException()
-        if( !accessRequestRepository.exists(accessRequest.id) ) throw new EntityNotFound()
+        if (!(accessRequest.status in [GRANTED, DENIED])) throw new InvalidStatusException()
+        if (!accessRequestRepository.exists(accessRequest.id)) throw new EntityNotFound()
 
         def storedAccessRequest = accessRequestRepository.findBy accessRequest.id
         storedAccessRequest.status = GRANTED

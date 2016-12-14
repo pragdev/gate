@@ -11,13 +11,12 @@ import static goauth.AccessRequest.Status.GRANTED
 import static goauth.AccessRequest.Status.PENDING
 import static javax.servlet.http.HttpServletResponse.SC_MOVED_TEMPORARILY
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST
-import static org.apache.http.HttpStatus.SC_METHOD_NOT_ALLOWED
 import static org.apache.http.HttpStatus.SC_NOT_FOUND
-import static org.apache.http.HttpStatus.SC_OK
 
 class AccessRequestControllerSpec extends Specification {
 
-    @Subject def accessRequestController = new AccessRequestController()
+    @Subject
+    def accessRequestController = new AccessRequestController()
 
     def request = Mock HttpServletRequest
     def response = Mock HttpServletResponse
@@ -95,7 +94,9 @@ class AccessRequestControllerSpec extends Specification {
 
         then:
         1 * response.setStatus(SC_MOVED_TEMPORARILY)
-        1 * response.setHeader('Location', {it == "$redirectionUri#access_token=${token.value}&token_type=example&expires_in=${token.expiresIn}"} )
+        1 * response.setHeader('Location', {
+            it == "$redirectionUri#access_token=${token.value}&token_type=example&expires_in=${token.expiresIn}"
+        })
     }
 
 }

@@ -13,28 +13,28 @@ import javax.servlet.http.HttpServletResponse
 @Log
 class ClientsController extends HttpServlet {
 
-  Security security
+    Security security
 
-  void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    Map parsed = new JsonSlurper().parse request.inputStream
-    Client client = security.register new Client(
-      name: parsed.name,
-      redirectionUri: new URI(parsed.redirectionUri),
-      type: parsed.type.toUpperCase()
-    )
+    void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Map json = new JsonSlurper().parse request.inputStream
+        Client client = security.register new Client(
+                name: json.name,
+                redirectionUri: new URI(json.redirectionUri),
+                type: json.type.toUpperCase()
+        )
 
-    JsonBuilder builder = new JsonBuilder()
-    builder {
-      id client.id
-      secret client.secret
+        JsonBuilder builder = new JsonBuilder()
+        builder {
+            id client.id
+            secret client.secret
+        }
+
+        response.contentType = 'application/json'
+        response.writer << builder.toString()
     }
 
-    response.contentType = 'application/json'
-    response.writer << builder.toString()
-  }
-
-  @Override
-  void init(ServletConfig config) throws ServletException {
-    security = config.servletContext.getAttribute('security')
-  }
+    @Override
+    void init(ServletConfig config) throws ServletException {
+        security = config.servletContext.getAttribute('security')
+    }
 }

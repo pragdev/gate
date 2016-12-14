@@ -189,7 +189,7 @@ class SecuritySpec extends Specification {
         def accessToken = security.grantAccess accessRequest
 
         then:
-        1 * security.accessRequestRepository.store({ it.status == GRANTED})
+        1 * security.accessRequestRepository.store({ it.status == GRANTED })
         accessToken.value ==~ /[0-9A-z-]*/
     }
 

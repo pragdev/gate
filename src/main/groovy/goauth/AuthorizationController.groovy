@@ -9,9 +9,7 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
-import static javax.servlet.http.HttpServletResponse.SC_OK
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
+import static javax.servlet.http.HttpServletResponse.*
 
 @Log
 public class AuthorizationController extends HttpServlet {
@@ -71,11 +69,11 @@ public class AuthorizationController extends HttpServlet {
 
     private Map<String, String> extractQueryParams(String queryString) {
         // TODO querystring can be null
-        if(queryString.trim().isEmpty()) return [:]
+        if (queryString.trim().isEmpty()) return [:]
 
         queryString.split('&').inject([:]) { map, token ->
             token.split('=').with {
-                map[it[0]] = it.size() > 1? it[1] : null
+                map[it[0]] = it.size() > 1 ? it[1] : null
             }
             map
         }

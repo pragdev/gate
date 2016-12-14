@@ -13,64 +13,65 @@ import static goauth.Client.Type.CONFIDENTIAL
 
 class ClientRepositorySpec extends Specification {
 
-  @Subject ClientRepository repository
-  LocalServiceTestHelper helper
-  DatastoreService datastoreService
-  Client client
+    @Subject
+    ClientRepository repository
+    LocalServiceTestHelper helper
+    DatastoreService datastoreService
+    Client client
 
-  def setup() {
-    helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-    datastoreService = DatastoreServiceFactory.datastoreService
-    repository = new ClientRepository(datastore: this.datastoreService)
-    client = new Client(id: 'randomid', secret: 'randomsecret', name: 'myapp', redirectionUri: new URI('http://myapp.com/grabtoken'), type: CONFIDENTIAL)
+    def setup() {
+        helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+        datastoreService = DatastoreServiceFactory.datastoreService
+        repository = new ClientRepository(datastore: this.datastoreService)
+        client = new Client(id: 'randomid', secret: 'randomsecret', name: 'myapp', redirectionUri: new URI('http://myapp.com/grabtoken'), type: CONFIDENTIAL)
 
-    helper.setUp();
-  }
+        helper.setUp();
+    }
 
-  def cleanup() {
-    helper.tearDown();
-  }
+    def cleanup() {
+        helper.tearDown();
+    }
 
-  def "should store a client in the datastore"() {
-    when:
-    repository.store this.client
+    def "should store a client in the datastore"() {
+        when:
+        repository.store this.client
 
-    then:
-    datastoreService.prepare(new Query(Client.simpleName)).countEntities(withLimit(10)) == 1
-  }
+        then:
+        datastoreService.prepare(new Query(Client.simpleName)).countEntities(withLimit(10)) == 1
+    }
 
-  def "should tell if a client exists in the datastore"() {
-    given:
-    repository.store client
+    def "should tell if a client exists in the datastore"() {
+        given:
+        repository.store client
 
-    expect:
-    repository.exists client.id
-    !repository.exists('wrongid')
-  }
+        expect:
+        repository.exists client.id
+        !repository.exists('wrongid')
+    }
 
-  def "should find a client already stored in the datastore"() {
-    given:
-    repository.store client
+    def "should find a client already stored in the datastore"() {
+        given:
+        repository.store client
 
-    when:
-    def storedCredentials = repository.findBy client.id
+        when:
+        def storedCredentials = repository.findBy client.id
 
-    then:
-    storedCredentials == client
-  }
+        then:
+        storedCredentials == client
+    }
 
-  def "should respond with null when cannot find credentials in the datastore"() {
-    expect:
-    repository.findBy('wrong') == null
-  }
+    def "should respond with null when cannot find credentials in the datastore"() {
+        expect:
+        repository.findBy('wrong') == null
+    }
 
-  def "should throw an illegal argument exception when id is not provided"() {
-    when:
-    repository.store new Client()
+    def "should throw an illegal argument exception when id is not provided"() {
+        when:
+        repository.store new Client()
 
-    then:
-    thrown IllegalArgumentException
-  }
+        then:
+        thrown IllegalArgumentException
+    }
 
 }
 
