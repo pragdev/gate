@@ -55,7 +55,7 @@ class CredentialsRepositorySpec extends Specification {
     repository.store credentials
 
     when:
-    def storedCredentials = repository.find credentials.username
+    def storedCredentials = repository.findBy credentials.username
 
     then:
     storedCredentials == credentials
@@ -63,7 +63,7 @@ class CredentialsRepositorySpec extends Specification {
 
   def "should respond with null when cannot find credentials in the datastore"() {
     expect:
-    repository.find('wrong') == null
+    repository.findBy('wrong') == null
   }
 
   def "should store an access token in the datastore"() {

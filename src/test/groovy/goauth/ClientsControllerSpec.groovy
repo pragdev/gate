@@ -10,7 +10,7 @@ class ClientsControllerSpec extends Specification {
 
   ClientsController controller
   HttpServletResponse response
-  private responseBody
+  StringWriter responseBody
 
   def setup() {
     controller = new ClientsController(security: Mock(Security))

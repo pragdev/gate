@@ -53,7 +53,7 @@ class ClientRepositorySpec extends Specification {
     repository.store client
 
     when:
-    def storedCredentials = repository.find client.id
+    def storedCredentials = repository.findBy client.id
 
     then:
     storedCredentials == client
@@ -61,7 +61,15 @@ class ClientRepositorySpec extends Specification {
 
   def "should respond with null when cannot find credentials in the datastore"() {
     expect:
-    repository.find('wrong') == null
+    repository.findBy('wrong') == null
+  }
+
+  def "should throw an illegal argument exception when id is not provided"() {
+    when:
+    repository.store new Client()
+
+    then:
+    thrown IllegalArgumentException
   }
 
 }

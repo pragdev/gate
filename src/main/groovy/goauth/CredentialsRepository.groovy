@@ -27,7 +27,7 @@ class CredentialsRepository {
     findCredentialsBy username
   }
 
-  Credentials find(String username) {
+  Credentials findBy(String username) {
     def entity = findCredentialsBy username
     if(!entity) return null
 

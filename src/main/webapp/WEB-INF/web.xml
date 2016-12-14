@@ -4,41 +4,61 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-  <servlet>
-    <display-name>Remote API Servlet</display-name>
-    <servlet-name>RemoteApiServlet</servlet-name>
-    <servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>RemoteApiServlet</servlet-name>
-    <url-pattern>/remote_api</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <display-name>Remote API Servlet</display-name>
+        <servlet-name>RemoteApiServlet</servlet-name>
+        <servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RemoteApiServlet</servlet-name>
+        <url-pattern>/remote_api</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>TokenController</servlet-name>
-    <servlet-class>goauth.TokenController</servlet-class>
-  </servlet>
+    <servlet>
+        <servlet-name>TokenController</servlet-name>
+        <servlet-class>goauth.TokenController</servlet-class>
+    </servlet>
 
-  <servlet-mapping>
-    <servlet-name>TokenController</servlet-name>
-    <url-pattern>token</url-pattern>
-  </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TokenController</servlet-name>
+        <url-pattern>token</url-pattern>
+    </servlet-mapping>
 
-  <servlet>
-    <servlet-name>ClientController</servlet-name>
-    <servlet-class>goauth.ClientsController</servlet-class>
-  </servlet>
+    <servlet>
+        <servlet-name>ClientController</servlet-name>
+        <servlet-class>goauth.ClientsController</servlet-class>
+    </servlet>
 
-  <servlet-mapping>
-    <servlet-name>ClientController</servlet-name>
-    <url-pattern>clients</url-pattern>
-  </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ClientController</servlet-name>
+        <url-pattern>clients</url-pattern>
+    </servlet-mapping>
 
-  <listener>
-    <listener-class>
-      goauth.ContextListener
-    </listener-class>
-  </listener>
+    <servlet>
+        <servlet-name>AuthorizationController</servlet-name>
+        <servlet-class>goauth.AuthorizationController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AuthorizationController</servlet-name>
+        <url-pattern>authorization</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AccessRequestController</servlet-name>
+        <servlet-class>goauth.AccessRequestController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AccessRequestController</servlet-name>
+        <url-pattern>accessrequests</url-pattern>
+    </servlet-mapping>
+
+    <listener>
+        <listener-class>
+            goauth.ContextListener
+        </listener-class>
+    </listener>
 
 </web-app>

@@ -38,14 +38,14 @@ dependencies {
     compile 'org.codehaus.groovy.modules.remote:remote-transport-http:0.5'
     compile 'org.mongodb:mongodb-driver:3.2.2'
 
-    def gaeVersion = '1.9.44'
+    def gaeVersion = '1.9.48'
     appengineSdk "com.google.appengine:appengine-java-sdk:$gaeVersion"
     compile "com.google.appengine:appengine-api-1.0-sdk:$gaeVersion",
-      "com.google.appengine:appengine-api-labs:$gaeVersion",
-      "com.google.appengine:appengine-tools-sdk:$gaeVersion"
+            "com.google.appengine:appengine-api-labs:$gaeVersion",
+            "com.google.appengine:appengine-tools-sdk:$gaeVersion"
     testCompile "com.google.appengine:appengine-api-stubs:$gaeVersion"
     testCompile "com.google.appengine:appengine-testing:$gaeVersion"
-    testCompile 'com.google.appengine:appengine-remote-api:1.9.44'
+    testCompile "com.google.appengine:appengine-remote-api:$gaeVersion"
 
     // We use the latest groovy 2.x version for building this library
     compile 'org.codehaus.groovy:groovy-all:2.4.7'
@@ -70,24 +70,31 @@ appengine {
 
 cucumber {
     formats = [
-      'pretty', // prints nice format out to the console
-      'html:build/reports/cucumber', // html
-      'junit:build/cucumber.xml' // junit format for integration with CI tool etc
+            'pretty', // prints nice format out to the console
+            'html:build/reports/cucumber', // html
+            'junit:build/cucumber.xml' // junit format for integration with CI tool etc
     ]
     featureDirs = ['src/cucumber/resources/features']
     glueDirs = [
-      "classpath:io.jdev.geb.cucumber.steps.groovy.en"
+            "classpath:io.jdev.geb.cucumber.steps.groovy.en"
     ]
+    tags = ['~@wip']
 }
 
-tasks.cucumber {
-    appengineRun {
-        daemon = true
-        disableUpdateCheck = true
+appengineRun {
+    doFirst {
+        if (tasks.cucumber in gradle.taskGraph.allTasks || tasks.integrationTest in gradle.taskGraph.allTasks) {
+            appengineRun {
+                daemon = true
+                disableUpdateCheck = true
+            }
+        }
     }
+}
 
-    appengineRun.mustRunAfter classes, processResources, compileJava, compileGroovy
+appengineRun.mustRunAfter classes, processResources, compileJava, compileGroovy
 
+tasks.cucumber {
     dependsOn appengineRun
     finalizedBy appengineStop
 }
@@ -97,9 +104,22 @@ tasks.check {
         outputs.upToDateWhen { false }
     }
 
-    appengineRun {
-        daemon = true
-        disableUpdateCheck = true
-    }
     dependsOn tasks.cucumber
+}
+
+sourceSets {
+    integration {
+        java.srcDir file('src/integration/java')
+        groovy.srcDir file('src/integration/groovy')
+        resources.srcDir file('src/integration/resources')
+        compileClasspath = main.output + configurations.testCompile + test.output
+        runtimeClasspath = output + compileClasspath
+    }
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integration.output.classesDir
+    classpath = sourceSets.integration.runtimeClasspath
+    dependsOn appengineRun
+    finalizedBy appengineStop
 }
