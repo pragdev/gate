@@ -12,15 +12,15 @@ import javax.servlet.http.HttpServletResponse
 @Log
 class RemoteController extends HttpServlet {
 
-    CredentialsRepository credentialsRepository
+    ResourceOwnerRepository resourceOwnerRepository
 
     void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         def parsed = new JsonSlurper().parse(request.inputStream)
-        credentialsRepository.store new Credentials(parsed.username, parsed.password)
+        resourceOwnerRepository.store new ResourceOwner(parsed.username, parsed.password, parsed.displayName)
     }
 
     @Override
     void init(ServletConfig config) throws ServletException {
-        credentialsRepository = new CredentialsRepository()
+        resourceOwnerRepository = new ResourceOwnerRepository()
     }
 }

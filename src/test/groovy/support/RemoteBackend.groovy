@@ -5,19 +5,19 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory
 import com.google.appengine.api.datastore.Query
 import com.google.appengine.tools.remoteapi.RemoteApiInstaller
 import com.google.appengine.tools.remoteapi.RemoteApiOptions
-import goauth.CredentialsRepository
+import goauth.ResourceOwnerRepository
 
 class RemoteBackend {
 
     DatastoreService datastore
-    CredentialsRepository credentialsRepository
+    ResourceOwnerRepository resourceOwnerRepository
 
     RemoteBackend() {
         RemoteApiInstaller installer = new RemoteApiInstaller()
         installer.install new RemoteApiOptions().server('localhost', 8080).useDevelopmentServerCredential()
 
         datastore = DatastoreServiceFactory.datastoreService
-        credentialsRepository = new CredentialsRepository(datastore: datastore)
+        resourceOwnerRepository = new ResourceOwnerRepository(datastore: datastore)
     }
 
     def clean() {

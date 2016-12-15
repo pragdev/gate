@@ -16,7 +16,7 @@ class TokenControllerSpec extends Specification {
         def writer = new PrintWriter(responseBody)
 
         controller = new TokenController(security: Mock(Security) {
-            authenticate(_ as Credentials) >> new AccessToken()
+            authenticateResourceOwner(_ as Credentials) >> new AccessToken()
         })
         response = Mock(HttpServletResponse) {
             getWriter() >> writer
@@ -28,7 +28,7 @@ class TokenControllerSpec extends Specification {
         def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
 
         def security = Mock(Security) {
-            authenticate(*_) >> new AccessToken()
+            authenticateResourceOwner(*_) >> new AccessToken()
         }
         controller.security = security
 
@@ -48,7 +48,7 @@ class TokenControllerSpec extends Specification {
         def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
 
         def security = Mock(Security) {
-            authenticate(*_) >> new AccessToken()
+            authenticateResourceOwner(*_) >> new AccessToken()
         }
         controller.security = security
 
@@ -67,7 +67,7 @@ class TokenControllerSpec extends Specification {
         def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
 
         def security = Mock(Security) {
-            authenticate(*_) >> new AccessToken()
+            authenticateResourceOwner(*_) >> new AccessToken()
         }
         controller.security = security
 

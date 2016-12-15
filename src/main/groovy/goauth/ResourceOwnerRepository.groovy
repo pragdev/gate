@@ -6,16 +6,17 @@ import groovy.transform.TupleConstructor
 import static com.google.appengine.api.datastore.Query.FilterOperator.IN
 
 @TupleConstructor
-class CredentialsRepository {
+class ResourceOwnerRepository {
     DatastoreService datastore = DatastoreServiceFactory.datastoreService
 
-    Credentials store(Credentials credentials) {
-        Entity entity = new Entity(asKey(credentials.username, 'Credentials'))
-        entity.setProperty('username', credentials.username)
-        entity.setProperty('password', credentials.password)
+    ResourceOwner store(ResourceOwner resourceOwner) {
+        Entity entity = new Entity(asKey(resourceOwner.username, 'ResourceOwner'))
+        entity.setProperty('username', resourceOwner.username)
+        entity.setProperty('password', resourceOwner.password)
+        entity.setProperty('displayName', resourceOwner.displayName)
 
         datastore.put entity
-        credentials
+        resourceOwner
     }
 
     private Key asKey(String param, String kind) {
@@ -24,14 +25,14 @@ class CredentialsRepository {
     }
 
     boolean exists(String username) {
-        findCredentialsBy username
+        findResourceOwnerBy username
     }
 
-    Credentials findBy(String username) {
-        def entity = findCredentialsBy username
+    ResourceOwner findBy(String username) {
+        def entity = findResourceOwnerBy username
         if (!entity) return null
 
-        new Credentials(entity.getProperty('username').toString(), entity.getProperty('password').toString())
+        new ResourceOwner(entity.getProperty('username').toString(), entity.getProperty('password').toString(), entity.getProperty('displayName').toString())
     }
 
     AccessToken store(AccessToken accessToken) {
@@ -44,8 +45,8 @@ class CredentialsRepository {
         accessToken
     }
 
-    private Entity findCredentialsBy(String username) {
-        def query = datastore.prepare new Query(Credentials.simpleName).setFilter(new Query.FilterPredicate('username', IN, [username]))
+    private Entity findResourceOwnerBy(String username) {
+        def query = datastore.prepare new Query(ResourceOwner.simpleName).setFilter(new Query.FilterPredicate('username', IN, [username]))
         query.asSingleEntity() ?: null
     }
 }

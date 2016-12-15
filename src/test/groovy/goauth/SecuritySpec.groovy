@@ -16,16 +16,16 @@ class SecuritySpec extends Specification {
 
     def "should provide a new Access Token when user credentials are authenticated"() {
         given:
-        security.credentialsRepository = Mock(CredentialsRepository) {
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             1 * exists('antonio') >> true
-            1 * findBy('antonio') >> new Credentials(username: 'antonio', password: 'test')
+            1 * findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'test', displayName: "ayeye brazorf")
             1 * store(_ as AccessToken) >> { args -> args.first() }
         }
 
         def credentials = new Credentials(username: 'antonio', password: 'test')
 
         when:
-        AccessToken accessToken = security.authenticate credentials
+        AccessToken accessToken = security.authenticateResourceOwner credentials
 
         then:
         accessToken
@@ -34,7 +34,7 @@ class SecuritySpec extends Specification {
     def "should throw an invalid credential exception when the username is not present in the repository"() {
         given:
 
-        security.credentialsRepository = Mock(CredentialsRepository) {
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             exists('wrongusername') >> false
             0 * store(_ as AccessToken)
         }
@@ -42,7 +42,7 @@ class SecuritySpec extends Specification {
         def credentials = new Credentials(username: 'wrongusername', password: 'test')
 
         when:
-        security.authenticate credentials
+        security.authenticateResourceOwner credentials
 
         then:
         thrown InvalidCredentialsException
@@ -51,16 +51,16 @@ class SecuritySpec extends Specification {
     def "should throw an invalid credential exception when the user password does not match the stored password"() {
         given:
 
-        security.credentialsRepository = Mock(CredentialsRepository) {
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             exists('antonio') >> true
-            findBy('antonio') >> new Credentials(username: 'antonio', password: 'test')
+            findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'test', displayName: 'Ayeye Brazorf')
             0 * store(_ as AccessToken)
         }
 
         def credentials = new Credentials(username: 'antonio', password: 'wrong')
 
         when:
-        security.authenticate credentials
+        security.authenticateResourceOwner credentials
 
         then:
         thrown InvalidCredentialsException
@@ -69,15 +69,15 @@ class SecuritySpec extends Specification {
     def "should provide a new Access Token when client credentials are authenticated"() {
         given:
 
-        security.credentialsRepository = Mock(CredentialsRepository) {
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             1 * exists('myapp') >> true
-            1 * findBy('myapp') >> new Credentials(username: 'myapp', password: 'test')
+            1 * findBy('myapp') >> new ResourceOwner(username: 'myapp', password: 'test', displayName: 'Ayeye Brazorf')
             1 * store(_ as AccessToken) >> { args -> args.first() }
         }
         def credentials = new Credentials(username: 'myapp', password: 'test')
 
         when:
-        AccessToken accessToken = security.authenticate credentials
+        AccessToken accessToken = security.authenticateResourceOwner credentials
 
         then:
         accessToken
@@ -86,13 +86,13 @@ class SecuritySpec extends Specification {
     def "should throw an invalid credential exception when the client name is not present in the repository"() {
         given:
 
-        security.credentialsRepository = Mock(CredentialsRepository) {
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             exists('wrongclientname') >> false
             0 * store(_ as AccessToken)
         }
 
         when:
-        security.authenticate new Credentials(username: 'wrongclientname', password: 'test')
+        security.authenticateResourceOwner new Credentials(username: 'wrongclientname', password: 'test')
 
         then:
         thrown InvalidCredentialsException
@@ -101,16 +101,16 @@ class SecuritySpec extends Specification {
     def "should throw an invalid credential exception when the client password does not match the stored password"() {
         given:
 
-        security.credentialsRepository = Mock(CredentialsRepository) {
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             exists('myapp') >> true
-            findBy('myapp') >> new Credentials(username: 'myapp', password: 'test')
+            findBy('myapp') >> new ResourceOwner(username: 'myapp', password: 'test', displayName: 'Ayeye Brazorf')
             0 * store(_ as AccessToken)
         }
 
         def credentials = new Credentials(username: 'myapp', password: 'wrong')
 
         when:
-        security.authenticate credentials
+        security.authenticateResourceOwner credentials
 
         then:
         thrown InvalidCredentialsException
@@ -135,34 +135,33 @@ class SecuritySpec extends Specification {
 
     def "should identify a resource owner by credentials"() {
         given:
-        def credentials = new Credentials(username: 'user', password: 'test')
-        security.credentialsRepository = Mock(CredentialsRepository) {
-            findBy(credentials.username) >> credentials
+        def expectedOwner = new ResourceOwner(username: 'user', password: 'test', displayName: "Ayeye Brazorf")
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
+            findBy(expectedOwner.username) >> expectedOwner
         }
 
         when:
-        ResourceOwner resourceOwner = security.identifyResourceOwnerBy credentials
+        ResourceOwner resourceOwner = security.identifyResourceOwnerBy expectedOwner.credentials
 
         then:
-        resourceOwner != null
-        resourceOwner.name == credentials.username
+        resourceOwner == expectedOwner
     }
 
     def "should throw an invalid credentials exception when resource owner's credentials are invalid"() {
         given:
-        def credentials = new Credentials(username: 'user', password: 'test')
-        security.credentialsRepository = Mock(CredentialsRepository) {
-            findBy(credentials.username) >> storedCredentials
+        def expectedOwner = new ResourceOwner(username: 'user', password: 'test', displayName: "Ayeye Brazorf")
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
+            findBy(expectedOwner.username) >> storedOwner
         }
 
         when:
-        security.identifyResourceOwnerBy credentials
+        security.identifyResourceOwnerBy expectedOwner.credentials
 
         then:
         thrown InvalidCredentialsException
 
         where:
-        storedCredentials << [new Credentials(username: 'user', password: 'different'), null]
+        storedOwner << [new ResourceOwner(username: 'user', password: 'different', displayName: 'Ayeye Brazorf'), null]
     }
 
     @Unroll

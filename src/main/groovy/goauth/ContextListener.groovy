@@ -14,10 +14,10 @@ class ContextListener implements ServletContextListener {
         log.info 'Context initialized, loading services'
 
         def datastoreService = DatastoreServiceFactory.datastoreService
-        def credentialsRepository = new CredentialsRepository(datastore: datastoreService)
+        def resourceOwnerRepository = new ResourceOwnerRepository(datastore: datastoreService)
         def clientsRepository = new ClientRepository(datastore: datastoreService)
-        def accessRequestRepository = new AccessRequestRepository(datastore: datastoreService, credentialsRepository: credentialsRepository, clientsRepository: clientsRepository)
-        def security = new Security(credentialsRepository: credentialsRepository, clientsRepository: clientsRepository, accessRequestRepository: accessRequestRepository)
+        def accessRequestRepository = new AccessRequestRepository(datastore: datastoreService, resourceOwnerRepository: resourceOwnerRepository, clientsRepository: clientsRepository)
+        def security = new Security(resourceOwnerRepository: resourceOwnerRepository, clientsRepository: clientsRepository, accessRequestRepository: accessRequestRepository)
 
         event.servletContext.setAttribute('security', security)
         log.info 'services loaded'

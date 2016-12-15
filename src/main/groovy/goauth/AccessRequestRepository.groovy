@@ -8,7 +8,7 @@ import static com.google.appengine.api.datastore.Query.FilterOperator.IN
 @TupleConstructor
 class AccessRequestRepository {
     DatastoreService datastore = DatastoreServiceFactory.datastoreService
-    CredentialsRepository credentialsRepository
+    ResourceOwnerRepository resourceOwnerRepository
     ClientRepository clientsRepository
 
     AccessRequest store(AccessRequest accessRequest) {
@@ -18,7 +18,7 @@ class AccessRequestRepository {
         entity.setProperty('id', accessRequest.id)
         entity.setProperty('status', accessRequest.status.name())
         entity.setProperty('client', accessRequest.client?.id)
-        entity.setProperty('resourceOwner', accessRequest.resourceOwner?.name)
+        entity.setProperty('resourceOwner', accessRequest.resourceOwner?.username)
 
         datastore.put entity
         accessRequest
@@ -39,7 +39,7 @@ class AccessRequestRepository {
 
         def client = entity.getProperty('client').toString()
         def name = entity.getProperty('resourceOwner').toString()
-        def resourceOwner = new ResourceOwner(credentials: credentialsRepository.findBy(name));
+        def resourceOwner = resourceOwnerRepository.findBy name
 
         new AccessRequest(
                 id: entity.getProperty('id').toString(),

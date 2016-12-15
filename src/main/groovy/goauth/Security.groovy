@@ -11,17 +11,17 @@ enum AuthenticationFlow {
 
 @Log
 class Security {
-    CredentialsRepository credentialsRepository
+    ResourceOwnerRepository resourceOwnerRepository
     ClientRepository clientsRepository
     AccessRequestRepository accessRequestRepository
 
-    AccessToken authenticate(Credentials credentials) throws InvalidCredentialsException {
-        if (!credentialsRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
+    AccessToken authenticateResourceOwner(Credentials credentials) throws InvalidCredentialsException {
+        if (!resourceOwnerRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
 
-        Credentials storedCredentials = credentialsRepository.findBy credentials.username
-        if (storedCredentials != credentials) throw new InvalidCredentialsException(credentials)
+        ResourceOwner storedResourceOwner = resourceOwnerRepository.findBy credentials.username
+        if (!storedResourceOwner.accept(credentials)) throw new InvalidCredentialsException(credentials)
 
-        credentialsRepository.store new AccessToken()
+        resourceOwnerRepository.store new AccessToken()
     }
 
     AccessToken authenticateClient(Credentials credentials) throws InvalidCredentialsException {
@@ -30,7 +30,7 @@ class Security {
         Credentials storedCredentials = clientsRepository.findBy(credentials.username).credentials
         if (storedCredentials != credentials) throw new InvalidCredentialsException(credentials)
 
-        credentialsRepository.store new AccessToken()
+        resourceOwnerRepository.store new AccessToken()
     }
 
     Client register(Client client) {
@@ -47,10 +47,10 @@ class Security {
     ResourceOwner identifyResourceOwnerBy(Credentials credentials) {
         if (!credentials || credentials.incomplete) throw new InvalidCredentialsException(credentials)
 
-        Credentials storedCredentials = credentialsRepository.findBy credentials.username
-        if (storedCredentials != credentials) throw new InvalidCredentialsException(credentials)
+        ResourceOwner resourceOwner = resourceOwnerRepository.findBy credentials.username
+        if (!resourceOwner?.accept(credentials)) throw new InvalidCredentialsException(credentials)
 
-        return new ResourceOwner(credentials: storedCredentials)
+        return resourceOwner
     }
 
     AccessRequest accessRequest(Client client, ResourceOwner resourceOwner) {

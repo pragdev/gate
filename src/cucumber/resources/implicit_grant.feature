@@ -36,9 +36,9 @@ Feature:  The implicit grant type is used to obtain access tokens (it does not s
     Given a valid Client:
       | id    | secret | redirectionUri         |
       | myapp | test   | http://test.com/mypath |
-    And valid Resource Owner credentials:
-      | username | password |
-      | owner    | test2    |
+    And a valid Resource Owner:
+      | username | password | displayName   |
+      | owner    | test2    | ayeye brazorf |
     And the client redirects the resource owner to the Authorization Server at the path "/authorization"
     And the query string contains the parameters:
       | response_type | client_id | redirect_uri             |

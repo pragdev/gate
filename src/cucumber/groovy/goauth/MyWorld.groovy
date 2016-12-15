@@ -8,7 +8,7 @@ import groovyx.net.http.RESTClient
 class MyWorld {
     public RESTClient restClient
     private DatastoreService datastoreService
-    private CredentialsRepository credentialsRepository
+    private ResourceOwnerRepository resourceOwnerRepository
     private ClientRepository clientRepository
     static RemoteApiOptions remoteOptions = new RemoteApiOptions()
             .server('localhost', 8080)
@@ -18,17 +18,17 @@ class MyWorld {
         restClient = new RESTClient('http://localhost:8080/')
 
         datastoreService = DatastoreServiceFactory.datastoreService
-        credentialsRepository = new CredentialsRepository(datastore: datastoreService)
+        resourceOwnerRepository = new ResourceOwnerRepository(datastore: datastoreService)
         clientRepository = new ClientRepository(datastore: datastoreService)
     }
 
-    def store(Credentials credentials) {
+    def store(ResourceOwner resourceOwner) {
         // TODO try storing an access token only !?
-        this.credentialsRepository.store credentials
+        this.resourceOwnerRepository.store resourceOwner
     }
 
     def store(AccessToken accessToken) {
-        credentialsRepository.store accessToken
+        resourceOwnerRepository.store accessToken
     }
 
     def store(Client client) {

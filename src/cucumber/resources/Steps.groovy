@@ -4,6 +4,7 @@ import cucumber.api.groovy.Hooks
 import goauth.AccessToken
 import goauth.Client
 import goauth.Credentials
+import goauth.ResourceOwner
 import groovy.json.JsonSlurper
 
 import static goauth.Client.Type.CONFIDENTIAL
@@ -13,13 +14,12 @@ this.metaClass.mixin(Hooks)
 this.metaClass.mixin(EN)
 
 
-Given(~/^valid Resource Owner credentials:$/) { DataTable table ->
-    def credentialsData = table.asMaps(String, String).first()
-    def username = credentialsData.username
-    def password = credentialsData.password
+Given(~/^a valid Resource Owner:$/) { DataTable table ->
+    def resourceOwnerData = table.asMaps(String, String).first()
 
-    credentials = new Credentials(username, password)
-    store credentials
+    credentials = new Credentials(username: resourceOwnerData.username, password: resourceOwnerData.password)
+    resourceOwner = new ResourceOwner(displayName: resourceOwnerData.displayName, username: resourceOwnerData.username, password: resourceOwnerData.password)
+    store resourceOwner
 }
 
 When(~/^the client makes a POST request to the Authorization Server at the path "([^"]*)"$/) { String path ->

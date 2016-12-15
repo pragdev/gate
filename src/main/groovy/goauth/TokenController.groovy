@@ -24,7 +24,7 @@ public class TokenController extends HttpServlet {
         AuthenticationFlow flow = request.getParameter('grant_type').toUpperCase()
         def credentials = extractCredentialsFromBody(request)
 
-        def token = security.authenticate credentials
+        def token = security.authenticateResourceOwner credentials
 
         response.setHeader('Cache-Control', 'no-store')
         response.setHeader('Pragma', 'no-cache')

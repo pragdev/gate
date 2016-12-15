@@ -10,17 +10,17 @@ import spock.lang.Subject
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit
 
-class CredentialsRepositorySpec extends Specification {
+class ResourceOwnerRepositorySpec extends Specification {
 
     @Subject
-    def repository
+    ResourceOwnerRepository repository
     LocalServiceTestHelper helper
     DatastoreService datastoreService
 
     def setup() {
         helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
         datastoreService = DatastoreServiceFactory.datastoreService
-        repository = new CredentialsRepository(datastore: this.datastoreService)
+        repository = new ResourceOwnerRepository(datastore: this.datastoreService)
 
         helper.setUp();
     }
@@ -31,35 +31,35 @@ class CredentialsRepositorySpec extends Specification {
 
     def "should store credentials in the datastore"() {
         given:
-        def credentials = new Credentials(username: 'Antonio', password: 'mylittlesecret')
+        def resourceOwner = new ResourceOwner(username: 'Antonio', password: 'mylittlesecret', displayName: 'Ayeye Brazorf')
 
         when:
-        repository.store credentials
+        repository.store resourceOwner
 
         then:
-        datastoreService.prepare(new Query(Credentials.simpleName)).countEntities(withLimit(10)) == 1
+        datastoreService.prepare(new Query(ResourceOwner.simpleName)).countEntities(withLimit(10)) == 1
     }
 
     def "should tell if credentials exists in the datastore"() {
         given:
-        def credentials = new Credentials(username: 'Antonio', password: 'mylittlesecret')
-        repository.store credentials
+        def resourceOwner = new ResourceOwner(username: 'Antonio', password: 'mylittlesecret', displayName: 'Ayeye Brazorf')
+        repository.store resourceOwner
 
         expect:
-        repository.exists credentials.username
+        repository.exists resourceOwner.username
         !repository.exists('wrongusername')
     }
 
     def "should find credentials already stored in the datastore"() {
         given:
-        def credentials = new Credentials(username: 'Antonio', password: 'mylittlesecret')
-        repository.store credentials
+        def resourceOwner = new ResourceOwner(username: 'Antonio', password: 'mylittlesecret', displayName: 'Ayeye Brazorf')
+        repository.store resourceOwner
 
         when:
-        def storedCredentials = repository.findBy credentials.username
+        def storedCredentials = repository.findBy resourceOwner.username
 
         then:
-        storedCredentials == credentials
+        storedCredentials == resourceOwner
     }
 
     def "should respond with null when cannot find credentials in the datastore"() {
