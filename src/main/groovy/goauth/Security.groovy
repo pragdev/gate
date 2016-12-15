@@ -24,6 +24,15 @@ class Security {
         credentialsRepository.store new AccessToken()
     }
 
+    AccessToken authenticateClient(Credentials credentials) throws InvalidCredentialsException {
+        if (!clientsRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
+
+        Credentials storedCredentials = clientsRepository.findBy(credentials.username).credentials
+        if (storedCredentials != credentials) throw new InvalidCredentialsException(credentials)
+
+        credentialsRepository.store new AccessToken()
+    }
+
     Client register(Client client) {
         client.id = UUID.randomUUID().toString()
         client.secret = UUID.randomUUID().toString()

@@ -26,6 +26,16 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>ClientTokenController</servlet-name>
+        <servlet-class>goauth.ClientTokenController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ClientTokenController</servlet-name>
+        <url-pattern>clienttoken</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>ClientController</servlet-name>
         <servlet-class>goauth.ClientsController</servlet-class>
     </servlet>

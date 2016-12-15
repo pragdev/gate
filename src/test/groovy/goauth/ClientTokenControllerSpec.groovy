@@ -6,8 +6,8 @@ import spock.lang.Specification
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class TokenControllerSpec extends Specification {
-    TokenController controller
+class ClientTokenControllerSpec extends Specification {
+    ClientTokenController controller
     HttpServletResponse response
     private responseBody
 
@@ -15,8 +15,8 @@ class TokenControllerSpec extends Specification {
         responseBody = new StringWriter()
         def writer = new PrintWriter(responseBody)
 
-        controller = new TokenController(security: Mock(Security) {
-            authenticate(_ as Credentials) >> new AccessToken()
+        controller = new ClientTokenController(security: Mock(Security) {
+            authenticateClient(_ as Credentials) >> new AccessToken()
         })
         response = Mock(HttpServletResponse) {
             getWriter() >> writer
@@ -28,7 +28,7 @@ class TokenControllerSpec extends Specification {
         def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
 
         def security = Mock(Security) {
-            authenticate(*_) >> new AccessToken()
+            authenticateClient(*_) >> new AccessToken()
         }
         controller.security = security
 
@@ -48,7 +48,7 @@ class TokenControllerSpec extends Specification {
         def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
 
         def security = Mock(Security) {
-            authenticate(*_) >> new AccessToken()
+            authenticateClient(*_) >> new AccessToken()
         }
         controller.security = security
 
@@ -67,7 +67,7 @@ class TokenControllerSpec extends Specification {
         def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
 
         def security = Mock(Security) {
-            authenticate(*_) >> new AccessToken()
+            authenticateClient(*_) >> new AccessToken()
         }
         controller.security = security
 
@@ -93,30 +93,33 @@ class TokenControllerSpec extends Specification {
         new JsonSlurper().parseText(json)
     }
 
-    def "should extract credentials from the request body"() {
+    def "should extract credentials from the Authorization header"() {
         given:
+
         HttpServletRequest request = Mock(HttpServletRequest) {
-            getParameter('username') >> 'antonio'
-            getParameter('password') >> 'test'
+            getHeader('Authorization') >> 'Basic bXlhcHA6dGVzdA=='
         }
 
         when:
-        def credentials = controller.extractCredentialsFromBody request
+        def credentials = controller.extractCredentialsFromHeader request
 
         then:
-        credentials == new Credentials('antonio', 'test')
+        credentials == new Credentials('myapp', 'test')
     }
 
-    def "should not extract any credentials from the request body if params are missing"() {
+    def "should not extract any credentials from the Authorization header if params are missing"() {
         given:
 
         HttpServletRequest request = Mock(HttpServletRequest) {
-            getParameter('username') >> null
-            getParameter('password') >> null
+            getHeader('Authorization') >> header
         }
 
         expect:
-        !controller.extractCredentialsFromBody(request)
+        !controller.extractCredentialsFromHeader(request)
+
+        where:
+        header << ['', null, 'Basic wrong9hjformat', 'Basic ', 'wrong']
     }
+
 
 }

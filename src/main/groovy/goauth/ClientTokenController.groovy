@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Log
-public class TokenController extends HttpServlet {
+public class ClientTokenController extends HttpServlet {
 
     Security security
 
@@ -21,10 +21,11 @@ public class TokenController extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // TODO assert flow
         AuthenticationFlow flow = request.getParameter('grant_type').toUpperCase()
-        def credentials = extractCredentialsFromBody(request)
+        def credentials = extractCredentialsFromHeader(request)
 
-        def token = security.authenticate credentials
+        def token = security.authenticateClient credentials
 
         response.setHeader('Cache-Control', 'no-store')
         response.setHeader('Pragma', 'no-cache')
@@ -40,11 +41,13 @@ public class TokenController extends HttpServlet {
         response.writer << builder.toString()
     }
 
-    Credentials extractCredentialsFromBody(HttpServletRequest request) {
-        def username = request.getParameter('username')
-        def password = request.getParameter('password')
+    Credentials extractCredentialsFromHeader(HttpServletRequest request) {
+        def header = request.getHeader('Authorization')?.minus 'Basic '
+        if (!header) return null
+
+        def decoded = new String(header.decodeBase64())
+        def (username, password) = decoded.tokenize(':')
 
         !username || !password ? null : new Credentials(username, password)
     }
-
 }

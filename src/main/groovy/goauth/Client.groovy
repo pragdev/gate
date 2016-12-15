@@ -13,4 +13,8 @@ class Client {
     URI redirectionUri
     Type type
 
+    Credentials getCredentials() {
+        return new Credentials(username: id, password: secret)
+    }
+
 }

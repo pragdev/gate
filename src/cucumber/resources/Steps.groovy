@@ -14,11 +14,12 @@ this.metaClass.mixin(EN)
 
 
 Given(~/^valid Resource Owner credentials:$/) { DataTable table ->
-    def credentials = table.asMaps(String, String).first()
-    username = credentials.username
-    password = credentials.password
+    def credentialsData = table.asMaps(String, String).first()
+    def username = credentialsData.username
+    def password = credentialsData.password
 
-    store new Credentials(username, password)
+    credentials = new Credentials(username, password)
+    store credentials
 }
 
 When(~/^the client makes a POST request to the Authorization Server at the path "([^"]*)"$/) { String path ->
@@ -26,8 +27,7 @@ When(~/^the client makes a POST request to the Authorization Server at the path 
 }
 
 When(~/^the client redirects the resource owner to the Authorization Server at the path "([^"]*)"$/) { String path ->
-    def encodedCredentials = "$username:$password".bytes.encodeBase64().toString()
-    restClient.setHeaders([Authorization: "Basic $encodedCredentials"])
+    restClient.setHeaders([Authorization: "Basic ${credentials.encode()}"])
     request = [method: 'get', path: path]
 }
 
@@ -42,8 +42,7 @@ When(~/^the query string contains the parameters:$/) { DataTable table ->
 }
 
 And(~/^the (?:request|resource owner) uses the basic authentication scheme$/) { ->
-    def encodedCredentials = "$username:$password".bytes.encodeBase64().toString()
-    restClient.setHeaders([Authorization: "Basic $encodedCredentials"])
+    restClient.setHeaders([Authorization: "Basic ${credentials.encode()}"])
 }
 
 Then(~/^the Authentication Server should respond OK$/) { ->
@@ -70,23 +69,14 @@ Then(~/^the body should be:$/) { expectedBody ->
     assert responseBody.token_type == expectedBody.token_type
 }
 
-Given(~/^valid Client credentials:$/) { table ->
-    def credentials = table.asMaps(String, String).first()
-    username = credentials.username
-    password = credentials.password
-
-    store new Client(id: username, name: "my display name", type: CONFIDENTIAL)
-    store new Credentials(username, password)
-}
-
 Given(~/^a valid Client:$/) { table ->
     def clientData = table.asMaps(String, String).first()
-    username = clientData.username
-    password = clientData.password
+    def id = clientData.id
+    def secret = clientData.secret
     redirectionUri = clientData.redirectionUri
 
-    store new Client(id: username, name: "my display name", redirectionUri: new URI(redirectionUri), type: CONFIDENTIAL)
-    store new Credentials(username, password)
+    credentials = new Credentials(id, secret)
+    store new Client(id: id, secret: secret, name: "my display name", redirectionUri: new URI(redirectionUri), type: CONFIDENTIAL)
 }
 
 Given(~/^a authentication server administrator has already obtained an access token$/) { ->

@@ -12,4 +12,8 @@ class Credentials implements Serializable {
     boolean isIncomplete() {
         !username || !password || username.trim().isEmpty() || password.trim().isEmpty()
     }
+
+    String encode() {
+        "${username}:${password}".bytes.encodeBase64().toString()
+    }
 }

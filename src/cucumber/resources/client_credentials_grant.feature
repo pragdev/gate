@@ -15,10 +15,10 @@ Feature: The client credentials (or other forms of client authentication) can
 
   (B)  The authorization server authenticates the client, and if valid,
   issues an access token.
-    Given valid Client credentials:
-      | username | password |
-      | myapp    | test     |
-    When the client makes a POST request to the Authorization Server at the path "/token"
+    Given a valid Client:
+      | id    | secret | redirectionUri           |
+      | myapp | test   | http://test.com/callback |
+    When the client makes a POST request to the Authorization Server at the path "/clienttoken"
     And the request uses the basic authentication scheme
     And the body "application/x-www-form-urlencoded" contains the parameters:
       | grant_type         |

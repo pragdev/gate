@@ -34,8 +34,8 @@ Feature:  The implicit grant type is used to obtain access tokens (it does not s
 
   (G)  The user-agent passes the access token to the client.
     Given a valid Client:
-      | username | password | redirectionUri         |
-      | myapp    | test     | http://test.com/mypath |
+      | id    | secret | redirectionUri         |
+      | myapp | test   | http://test.com/mypath |
     And valid Resource Owner credentials:
       | username | password |
       | owner    | test2    |
