@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletResponse
 public class TokenController extends HttpServlet {
 
     Security security
+    Presenter presenter
 
     @Override
     void init(ServletConfig config) throws ServletException {
         super.init(config)
-        security = config.servletContext.getAttribute('security')
+        security = config.servletContext.getAttribute 'security'
+        presenter = config.servletContext.getAttribute 'presenter'
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -30,14 +32,7 @@ public class TokenController extends HttpServlet {
         response.setHeader('Pragma', 'no-cache')
 
         response.contentType = 'application/json'
-
-        def builder = new JsonBuilder()
-        builder {
-            access_token token.value
-            token_type 'bearer'
-            expires_in token.expiresIn
-        }
-        response.writer << builder.toString()
+        response.writer << presenter.present(token)
     }
 
     Credentials extractCredentialsFromBody(HttpServletRequest request) {

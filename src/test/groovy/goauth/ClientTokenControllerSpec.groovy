@@ -15,9 +15,10 @@ class ClientTokenControllerSpec extends Specification {
         responseBody = new StringWriter()
         def writer = new PrintWriter(responseBody)
 
-        controller = new ClientTokenController(security: Mock(Security) {
+        def security = Mock(Security) {
             authenticateClient(_ as Credentials) >> new AccessToken()
-        })
+        }
+        controller = new ClientTokenController(security: security, presenter: new Presenter())
         response = Mock(HttpServletResponse) {
             getWriter() >> writer
         }

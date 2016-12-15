@@ -12,6 +12,7 @@ class AccessToken {
 
     AccessToken(Map properties) {
         this(properties.issuedOn, properties.expiresIn)
+        if(properties.value) this.value = properties.value
     }
 
     AccessToken(Date issuedOn, Seconds expiresIn) {

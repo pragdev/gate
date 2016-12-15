@@ -15,9 +15,11 @@ class TokenControllerSpec extends Specification {
         responseBody = new StringWriter()
         def writer = new PrintWriter(responseBody)
 
-        controller = new TokenController(security: Mock(Security) {
+        def security = Mock(Security) {
             authenticateResourceOwner(_ as Credentials) >> new AccessToken()
-        })
+        }
+
+        controller = new TokenController(security: security, presenter: new Presenter())
         response = Mock(HttpServletResponse) {
             getWriter() >> writer
         }

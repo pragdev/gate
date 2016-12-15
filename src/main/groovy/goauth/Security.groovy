@@ -19,7 +19,7 @@ class Security {
         if (!resourceOwnerRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
 
         ResourceOwner storedResourceOwner = resourceOwnerRepository.findBy credentials.username
-        if (!storedResourceOwner.accept(credentials)) throw new InvalidCredentialsException(credentials)
+        if (!storedResourceOwner?.accept(credentials)) throw new InvalidCredentialsException(credentials)
 
         resourceOwnerRepository.store new AccessToken()
     }
@@ -47,10 +47,10 @@ class Security {
     ResourceOwner identifyResourceOwnerBy(Credentials credentials) {
         if (!credentials || credentials.incomplete) throw new InvalidCredentialsException(credentials)
 
-        ResourceOwner resourceOwner = resourceOwnerRepository.findBy credentials.username
-        if (!resourceOwner?.accept(credentials)) throw new InvalidCredentialsException(credentials)
+        ResourceOwner storedOwner = resourceOwnerRepository.findBy credentials.username
+        if (!storedOwner?.accept(credentials)) throw new InvalidCredentialsException(credentials)
 
-        return resourceOwner
+        return storedOwner
     }
 
     AccessRequest accessRequest(Client client, ResourceOwner resourceOwner) {
