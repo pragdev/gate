@@ -14,9 +14,9 @@ Feature: The resource owner password credentials (i.e., username and password) c
   (C)  The authorization server authenticates the client and validates the resource owner credentials,
   and if valid, issues an access token.
 
-    Given valid Resource Owner credentials:
-      | username | password |
-      | antonio  | test     |
+    Given a valid Resource Owner:
+      | username | password | displayName     |
+      | antonio  | test     | antonio brazorf |
     When the client makes a POST request to the Authorization Server at the path "/token"
     And the body "application/x-www-form-urlencoded" contains the parameters:
       | grant_type | username | password |

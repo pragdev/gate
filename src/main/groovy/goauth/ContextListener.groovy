@@ -20,6 +20,7 @@ class ContextListener implements ServletContextListener {
         def security = new Security(resourceOwnerRepository: resourceOwnerRepository, clientsRepository: clientsRepository, accessRequestRepository: accessRequestRepository)
 
         event.servletContext.setAttribute('security', security)
+        event.servletContext.setAttribute('presenter', new Presenter())
         log.info 'services loaded'
     }
 
