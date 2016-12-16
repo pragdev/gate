@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+import static goauth.AuthenticationFlow.CLIENT_CREDENTIALS
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+
 @Log
 public class ClientTokenController extends HttpServlet {
 
@@ -22,10 +25,13 @@ public class ClientTokenController extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO assert flow
         AuthenticationFlow flow = request.getParameter('grant_type').toUpperCase()
-        def credentials = request.extractCredentialsFromHeader()
+        if(flow != CLIENT_CREDENTIALS) {
+            response.status = SC_BAD_REQUEST
+            return
+        }
 
+        def credentials = request.extractCredentialsFromHeader()
         def token = security.authenticateClient credentials
 
         response.setHeader('Cache-Control', 'no-store')

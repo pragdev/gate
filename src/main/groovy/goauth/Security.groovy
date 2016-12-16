@@ -6,7 +6,7 @@ import static goauth.AccessRequest.Status.DENIED
 import static goauth.AccessRequest.Status.GRANTED
 
 enum AuthenticationFlow {
-    CLIENT_CREDENTIALS, PASSWORD
+    CLIENT_CREDENTIALS, PASSWORD, REFRESH_TOKEN
 }
 
 @Log

@@ -10,10 +10,12 @@ class Credentials implements Serializable {
     String password
 
     boolean isIncomplete() {
-        !username || !password || username.trim().isEmpty() || password.trim().isEmpty()
+        !username?.trim() || !password?.trim()
     }
 
     String encode() {
+        if(incomplete) throw new IllegalStateException()
         "${username}:${password}".bytes.encodeBase64().toString()
     }
+
 }

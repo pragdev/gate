@@ -6,10 +6,15 @@ import spock.lang.Specification
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+import static goauth.AuthenticationFlow.PASSWORD
+import static goauth.AuthenticationFlow.REFRESH_TOKEN
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+
 class TokenControllerSpec extends Specification {
     TokenController controller
     HttpServletResponse response
     private responseBody
+    private request
 
     def setup() {
         responseBody = new StringWriter()
@@ -19,23 +24,18 @@ class TokenControllerSpec extends Specification {
             authenticateResourceOwner(_ as Credentials) >> new AccessToken()
         }
 
-        controller = new TokenController(security: security, presenter: new Presenter())
         response = Mock(HttpServletResponse) {
             getWriter() >> writer
         }
+
+        request = GroovyMock(HttpServletRequest) {
+            getParameter('grant_type') >> PASSWORD
+            extractCredentialsFromBody() >> new Credentials(username: 'test', password: 'secret')
+        }
+        controller = new TokenController(security: security, presenter: new Presenter())
     }
 
     def "the new token response should be not cacheable"() {
-        given:
-        def request = Mock(HttpServletRequest) {
-            getParameter('grant_type') >> grantType
-        }
-
-        def security = Mock(Security) {
-            authenticateResourceOwner(*_) >> new AccessToken()
-        }
-        controller.security = security
-
         when:
         controller.doPost(request, response)
 
@@ -48,14 +48,6 @@ class TokenControllerSpec extends Specification {
     }
 
     def "the new token response should be in a JSON format"() {
-        given:
-        def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
-
-        def security = Mock(Security) {
-            authenticateResourceOwner(*_) >> new AccessToken()
-        }
-        controller.security = security
-
         when:
         controller.doPost(request, response)
 
@@ -67,23 +59,17 @@ class TokenControllerSpec extends Specification {
     }
 
     def "should generate a new token when credentials are valid"() {
-        given:
-        def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
-
-        def security = Mock(Security) {
-            authenticateResourceOwner(*_) >> new AccessToken()
-        }
-        controller.security = security
-
         when:
         controller.doPost(request, response)
 
         then:
         def json = parse responseBody.toString()
-        json.access_token != null
-        !json.access_token.isEmpty()
-        json.token_type == 'bearer'
-        json.expires_in == 3600
+        with(json) {
+            access_token != null
+            !access_token.isEmpty()
+            token_type == 'bearer'
+            expires_in == 3600
+        }
 
         where:
         grantType << AuthenticationFlow.values()*.toString()
@@ -97,30 +83,15 @@ class TokenControllerSpec extends Specification {
         new JsonSlurper().parseText(json)
     }
 
-    def "should extract credentials from the request body"() {
+    def 'should respond with bad request if the token type is not password'() {
         given:
-        HttpServletRequest request = Mock(HttpServletRequest) {
-            getParameter('username') >> 'antonio'
-            getParameter('password') >> 'test'
-        }
+        def request = Mock(HttpServletRequest) { getParameter('grant_type') >> REFRESH_TOKEN }
 
         when:
-        def credentials = controller.extractCredentialsFromBody request
+        controller.doPost(request, response)
 
         then:
-        credentials == new Credentials('antonio', 'test')
-    }
-
-    def "should not extract any credentials from the request body if params are missing"() {
-        given:
-
-        HttpServletRequest request = Mock(HttpServletRequest) {
-            getParameter('username') >> null
-            getParameter('password') >> null
-        }
-
-        expect:
-        !controller.extractCredentialsFromBody(request)
+        1 * response.setStatus(SC_BAD_REQUEST)
     }
 
 }

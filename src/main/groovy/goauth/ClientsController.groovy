@@ -15,6 +15,11 @@ class ClientsController extends HttpServlet {
 
     Security security
 
+    @Override
+    void init(ServletConfig config) throws ServletException {
+        security = config.servletContext.getAttribute('security')
+    }
+
     void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map json = new JsonSlurper().parse request.inputStream
         Client client = security.register new Client(
@@ -31,10 +36,5 @@ class ClientsController extends HttpServlet {
 
         response.contentType = 'application/json'
         response.writer << builder.toString()
-    }
-
-    @Override
-    void init(ServletConfig config) throws ServletException {
-        security = config.servletContext.getAttribute('security')
     }
 }
