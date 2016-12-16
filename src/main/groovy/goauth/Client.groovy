@@ -13,6 +13,10 @@ class Client {
     URI redirectionUri
     Type type
 
+    boolean accept(Credentials credentials) {
+        id == credentials.username && secret == credentials.password
+    }
+
     Credentials getCredentials() {
         return new Credentials(username: id, password: secret)
     }

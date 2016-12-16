@@ -1,6 +1,5 @@
 package goauth
 
-import groovy.json.JsonBuilder
 import groovy.util.logging.Log
 
 import javax.servlet.ServletConfig
@@ -24,9 +23,9 @@ public class TokenController extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         AuthenticationFlow flow = request.getParameter('grant_type').toUpperCase()
-        def credentials = extractCredentialsFromBody(request)
-
+        def credentials = request.extractCredentialsFromBody()
         def token = security.authenticateResourceOwner credentials
+
 
         response.setHeader('Cache-Control', 'no-store')
         response.setHeader('Pragma', 'no-cache')

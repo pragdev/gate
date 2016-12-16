@@ -27,7 +27,9 @@ class TokenControllerSpec extends Specification {
 
     def "the new token response should be not cacheable"() {
         given:
-        def request = Mock(HttpServletRequest) { getParameter('grant_type') >> grantType }
+        def request = Mock(HttpServletRequest) {
+            getParameter('grant_type') >> grantType
+        }
 
         def security = Mock(Security) {
             authenticateResourceOwner(*_) >> new AccessToken()

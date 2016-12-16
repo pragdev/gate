@@ -1,0 +1,4 @@
+moduleName=pattern-extension
+moduleVersion=1.0
+extensionClasses=goauth.HttpServletRequestExtension
+staticExtensionClasses=

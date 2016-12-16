@@ -1,6 +1,5 @@
 package goauth
 
-import groovy.json.JsonBuilder
 import groovy.util.logging.Log
 
 import javax.servlet.ServletConfig
@@ -25,7 +24,7 @@ public class ClientTokenController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO assert flow
         AuthenticationFlow flow = request.getParameter('grant_type').toUpperCase()
-        def credentials = extractCredentialsFromHeader(request)
+        def credentials = request.extractCredentialsFromHeader()
 
         def token = security.authenticateClient credentials
 
@@ -36,13 +35,4 @@ public class ClientTokenController extends HttpServlet {
         response.writer << presenter.present(token)
     }
 
-    Credentials extractCredentialsFromHeader(HttpServletRequest request) {
-        def header = request.getHeader('Authorization')?.minus 'Basic '
-        if (!header) return null
-
-        def decoded = new String(header.decodeBase64())
-        def (username, password) = decoded.tokenize(':')
-
-        !username || !password ? null : new Credentials(username, password)
-    }
 }

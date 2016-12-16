@@ -27,8 +27,8 @@ class Security {
     AccessToken authenticateClient(Credentials credentials) throws InvalidCredentialsException {
         if (!clientsRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
 
-        Credentials storedCredentials = clientsRepository.findBy(credentials.username).credentials
-        if (storedCredentials != credentials) throw new InvalidCredentialsException(credentials)
+        Client storedClient = clientsRepository.findBy(credentials.username)
+        if (!storedClient.accept(credentials)) throw new InvalidCredentialsException(credentials)
 
         resourceOwnerRepository.store new AccessToken()
     }
