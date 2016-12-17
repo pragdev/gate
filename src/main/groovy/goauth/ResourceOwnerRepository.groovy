@@ -10,18 +10,13 @@ class ResourceOwnerRepository {
     DatastoreService datastore = DatastoreServiceFactory.datastoreService
 
     ResourceOwner store(ResourceOwner resourceOwner) {
-        Entity entity = new Entity(asKey(resourceOwner.username, 'ResourceOwner'))
-        entity.setProperty('username', resourceOwner.username)
-        entity.setProperty('password', resourceOwner.password)
-        entity.setProperty('displayName', resourceOwner.displayName)
+        Entity entity = Entity.make(resourceOwner.username, ResourceOwner)
+        entity['username'] = resourceOwner.username
+        entity['password'] = resourceOwner.password
+        entity['displayName'] = resourceOwner.displayName
 
         datastore.put entity
         resourceOwner
-    }
-
-    private Key asKey(String param, String kind) {
-        def username = URLEncoder.encode(param, 'UTF-8')
-        KeyFactory.createKey(kind, username)
     }
 
     boolean exists(String username) {
@@ -36,7 +31,7 @@ class ResourceOwnerRepository {
     }
 
     AccessToken store(AccessToken accessToken) {
-        Entity entity = new Entity(asKey(accessToken.value, 'AccessToken'))
+        Entity entity = Entity.make(accessToken.value, AccessToken)
         entity.setProperty('value', accessToken.value)
         entity.setProperty('issuedOn', accessToken.issuedOn.time)
         entity.setProperty('expiresIn', accessToken.expiresIn)

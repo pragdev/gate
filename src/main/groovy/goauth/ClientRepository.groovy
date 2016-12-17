@@ -12,12 +12,12 @@ class ClientRepository {
     Client store(Client client) {
         if (!client.id) throw new IllegalArgumentException('A client id is required')
 
-        Entity entity = new Entity(asKey(client.id, 'Client'))
-        entity.setProperty('id', client.id)
-        entity.setProperty('secret', client.secret)
-        entity.setProperty('name', client.name)
-        entity.setProperty('type', client.type.toString())
-        entity.setProperty('redirectionUri', client.redirectionUri.toString())
+        Entity entity = Entity.make(client.id, Client)
+        entity['id'] = client.id
+        entity['secret'] = client.secret
+        entity['name'] = client.name
+        entity['type'] = client.type.toString()
+        entity['redirectionUri'] = client.redirectionUri.toString()
 
         datastore.put entity
         client

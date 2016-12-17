@@ -14,11 +14,11 @@ class AccessRequestRepository {
     AccessRequest store(AccessRequest accessRequest) {
         if (!accessRequest.id) throw new IllegalArgumentException('An accessRequest id is required')
 
-        Entity entity = new Entity(asKey(accessRequest.id, 'AccessRequest'))
-        entity.setProperty('id', accessRequest.id)
-        entity.setProperty('status', accessRequest.status.name())
-        entity.setProperty('client', accessRequest.client?.id)
-        entity.setProperty('resourceOwner', accessRequest.resourceOwner?.username)
+        Entity entity = Entity.make(accessRequest.id, AccessRequest)
+        entity['id'] = accessRequest.id
+        entity['status'] = accessRequest.status.name()
+        entity['client'] = accessRequest.client?.id
+        entity['resourceOwner'] = accessRequest.resourceOwner?.username
 
         datastore.put entity
         accessRequest
