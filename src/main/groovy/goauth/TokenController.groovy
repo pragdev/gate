@@ -30,6 +30,7 @@ public class TokenController extends HttpServlet {
             response.status = SC_BAD_REQUEST
             return
         }
+
         def credentials = request.extractCredentialsFromBody()
         def token = security.authenticateResourceOwner credentials
 

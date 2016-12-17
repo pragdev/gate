@@ -35,4 +35,20 @@ class HttpServletRequestExtensionSpec extends Specification {
         where:
         header << ['', null, 'Basic wrong9hjformat', 'Basic ', 'wrong']
     }
+
+    def 'should provide a map of query string params'() {
+        given:
+        HttpServletRequest request = Mock(HttpServletRequest) {
+            getQueryString() >> "response_type=token&client_id=s6BhdRkqt3&state=xyz&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb"
+        }
+
+        when:
+        Map queryParams = extension.queryParams(request)
+
+        then:
+        queryParams.response_type == 'token'
+        queryParams.client_id == 's6BhdRkqt3'
+        queryParams.state == 'xyz'
+        queryParams.redirect_uri == 'https://client.example.com/cb'
+    }
 }

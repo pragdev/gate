@@ -2,7 +2,6 @@ package goauth
 
 import groovy.json.JsonSlurper
 import spock.lang.Specification
-import spock.util.mop.Use
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse

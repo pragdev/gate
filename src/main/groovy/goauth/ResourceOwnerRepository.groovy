@@ -1,6 +1,9 @@
 package goauth
 
-import com.google.appengine.api.datastore.*
+import com.google.appengine.api.datastore.DatastoreService
+import com.google.appengine.api.datastore.DatastoreServiceFactory
+import com.google.appengine.api.datastore.Entity
+import com.google.appengine.api.datastore.Query
 import groovy.transform.TupleConstructor
 
 import static com.google.appengine.api.datastore.Query.FilterOperator.IN

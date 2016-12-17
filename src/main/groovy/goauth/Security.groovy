@@ -1,5 +1,6 @@
 package goauth
 
+import goauth.implicitgrant.ImplicitGrantRequest
 import groovy.util.logging.Log
 
 import static goauth.AccessRequest.Status.DENIED
@@ -72,4 +73,16 @@ class Security {
         def accessRequest = accessRequestRepository.findBy accessRequestId
         accessRequest.client.redirectionUri
     }
+
+    AccessRequest implicitFlowAccessRequest(ImplicitGrantRequest grantRequest, Credentials credentials) {
+        log.info "Authentication requests: $grantRequest"
+        Client client = findClientBy grantRequest.clientId
+        if (!client) throw new EntityNotFound()
+
+        def owner = identifyResourceOwnerBy credentials
+
+        AccessRequest accessRequest = accessRequest(client, owner)
+        accessRequest
+    }
+
 }

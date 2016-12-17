@@ -46,7 +46,7 @@ class AuthorizationControllerSpec extends Specification {
 
     def "should deny an access request when the client cannot be identified"() {
         given:
-        authorizationController.security.findClientBy('myid') >> null
+        authorizationController.security.implicitFlowAccessRequest(*_) >> { throw new EntityNotFound() }
 
         when:
         authorizationController.doGet(request, response)
@@ -58,10 +58,7 @@ class AuthorizationControllerSpec extends Specification {
     def "should deny an access request when the resource owner cannot be identified"() {
         given:
         request.getHeader(_) >> authHeader
-        authorizationController.security.findClientBy('myid') >> new Client()
-        authorizationController.security.identifyResourceOwnerBy(_) >> {
-            throw new InvalidCredentialsException(new Credentials())
-        }
+        authorizationController.security.implicitFlowAccessRequest(*_) >> { throw new InvalidCredentialsException(new Credentials()) }
 
         when:
         authorizationController.doGet(request, response)
@@ -76,12 +73,10 @@ class AuthorizationControllerSpec extends Specification {
     def "should respond with a new access request when client and resource owner are correctly identified"() {
         given:
         this.request.getHeader(_) >> "Basic ${"user:pass".bytes.encodeBase64().toString()}"
-        def client = new Client()
-        def owner = new ResourceOwner()
+        def client = new Client(name: 'client')
+        def owner = new ResourceOwner(displayName: 'owner')
         def accessRequest = new AccessRequest(id: "myid", client: client, resourceOwner: owner)
-        authorizationController.security.findClientBy('myid') >> client
-        authorizationController.security.identifyResourceOwnerBy(_) >> owner
-        authorizationController.security.accessRequest(_, _) >> accessRequest
+        authorizationController.security.implicitFlowAccessRequest(*_) >> accessRequest
 
         when:
         authorizationController.doGet(this.request, response)

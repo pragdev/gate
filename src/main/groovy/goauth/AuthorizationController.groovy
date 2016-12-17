@@ -1,5 +1,7 @@
 package goauth
 
+import goauth.implicitgrant.ImplicitGrantConverter
+import goauth.implicitgrant.ImplicitGrantRequest
 import groovy.json.JsonBuilder
 import groovy.util.logging.Log
 
@@ -24,37 +26,29 @@ public class AuthorizationController extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-
-            def params = request.queryParams()
-            if (!params.client_id || !params.response_type) {
-                response.status = SC_BAD_REQUEST
-                return
-            }
-            log.info "Authentication requests: $params"
-
-            response.setHeader 'Cache-Control', 'no-store'
-            response.setHeader 'Pragma', 'no-cache'
-
-            Client client = security.findClientBy params.client_id
-            if (!client) {
-                response.status = SC_UNAUTHORIZED
-                return
-            }
-
+            def converter = new ImplicitGrantConverter()
+            ImplicitGrantRequest grantRequest = converter.convert request
             def credentials = request.extractCredentialsFromHeader()
-            def owner = security.identifyResourceOwnerBy credentials
 
-            AccessRequest accessRequest = security.accessRequest(client, owner)
+            AccessRequest accessRequest = security.implicitFlowAccessRequest(grantRequest, credentials)
 
             response.contentType = 'application/json'
             response.status = SC_OK
             def builder = new JsonBuilder(accessRequest)
             response.writer << builder.toString()
 
+            response.setHeader 'Cache-Control', 'no-store'
+            response.setHeader 'Pragma', 'no-cache'
+
         } catch (InvalidCredentialsException ex) {
-            log.info("The credentials ($ex.credentials) are not valid")
+            log.info "The credentials ($ex.credentials) are not valid"
+            response.status = SC_UNAUTHORIZED
+        } catch (MissingQueryParam ex) {
+            log.info 'Missing params in request'
+            response.status = SC_BAD_REQUEST
+        } catch (EntityNotFound ex) {
+            log.info 'client not found'
             response.status = SC_UNAUTHORIZED
         }
     }
-
 }

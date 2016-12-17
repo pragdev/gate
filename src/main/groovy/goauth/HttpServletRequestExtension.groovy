@@ -28,7 +28,7 @@ class HttpServletRequestExtension {
 
         queryString.split('&').inject([:]) { map, token ->
             token.split('=').with {
-                map[it[0]] = it.size() > 1 ? it[1] : null
+                map[it[0]] = it.size() > 1 ? URLDecoder.decode(it[1], 'UTF-8') : null
             }
             map
         }

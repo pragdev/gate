@@ -1,5 +1,6 @@
 package goauth
 
+import goauth.implicitgrant.ImplicitGrantRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -68,13 +69,12 @@ class SecuritySpec extends Specification {
 
     def "should provide a new Access Token when client credentials are authenticated"() {
         given:
-
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
-            1 * exists('myapp') >> true
-            1 * findBy('myapp') >> new ResourceOwner(username: 'myapp', password: 'test', displayName: 'Ayeye Brazorf')
+            1 * exists('antonio') >> true
+            1 * findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'test', displayName: 'Ayeye Brazorf')
             1 * store(_ as AccessToken) >> { args -> args.first() }
         }
-        def credentials = new Credentials(username: 'myapp', password: 'test')
+        def credentials = new Credentials(username: 'antonio', password: 'test')
 
         when:
         AccessToken accessToken = security.authenticateResourceOwner credentials
@@ -229,5 +229,37 @@ class SecuritySpec extends Specification {
 
         then:
         uri == expectedUri
+    }
+
+    def "should deny an access request when the client cannot be identified"() {
+        given:
+        def grantRequest = new ImplicitGrantRequest(clientId: 'client1')
+        security.clientsRepository = Mock(ClientRepository) { findBy('client1') >> null }
+        def credentials = new Credentials(username: 'test', password: 'secret')
+
+
+        when:
+        security.implicitFlowAccessRequest(grantRequest, credentials)
+
+        then:
+        thrown EntityNotFound
+    }
+
+    def "should deny an access request when the resource owner cannot be identified"() {
+        given:
+        def grantRequest = new ImplicitGrantRequest(clientId: 'client1')
+        security.clientsRepository = Mock(ClientRepository) { findBy('client1') >> new Client() }
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) { findBy('test') >> new ResourceOwner() }
+
+        def credentials = new Credentials(username: 'test', password: 'secret')
+
+        when:
+        security.implicitFlowAccessRequest(grantRequest, credentials)
+
+        then:
+        thrown InvalidCredentialsException
+
+        where:
+        authHeader << ["Basic ${"user:pass".bytes.encodeBase64().toString()}", null]
     }
 }

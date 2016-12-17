@@ -20,8 +20,8 @@ public class ClientTokenController extends HttpServlet {
     @Override
     void init(ServletConfig config) throws ServletException {
         super.init(config)
-        security = config.servletContext.getAttribute('security')
-        presenter = config.servletContext.getAttribute('presenter')
+        security = config.servletContext.getAttribute 'security'
+        presenter = config.servletContext.getAttribute 'presenter'
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
