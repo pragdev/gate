@@ -25,7 +25,7 @@ public class AuthorizationController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
 
-            def params = extractQueryParams(request.queryString)
+            def params = request.queryParams()
             if (!params.client_id || !params.response_type) {
                 response.status = SC_BAD_REQUEST
                 return
@@ -41,7 +41,7 @@ public class AuthorizationController extends HttpServlet {
                 return
             }
 
-            def credentials = extractCredentialsFromHeader(request)
+            def credentials = request.extractCredentialsFromHeader()
             def owner = security.identifyResourceOwnerBy credentials
 
             AccessRequest accessRequest = security.accessRequest(client, owner)
@@ -54,28 +54,6 @@ public class AuthorizationController extends HttpServlet {
         } catch (InvalidCredentialsException ex) {
             log.info("The credentials ($ex.credentials) are not valid")
             response.status = SC_UNAUTHORIZED
-        }
-    }
-
-    Credentials extractCredentialsFromHeader(HttpServletRequest request) {
-        def header = request.getHeader('Authorization')?.minus 'Basic '
-        if (!header) return null
-
-        def decoded = new String(header.decodeBase64())
-        def (username, password) = decoded.tokenize(':')
-
-        !username || !password ? null : new Credentials(username, password)
-    }
-
-    private Map<String, String> extractQueryParams(String queryString) {
-        // TODO querystring can be null
-        if (queryString.trim().isEmpty()) return [:]
-
-        queryString.split('&').inject([:]) { map, token ->
-            token.split('=').with {
-                map[it[0]] = it.size() > 1 ? it[1] : null
-            }
-            map
         }
     }
 
