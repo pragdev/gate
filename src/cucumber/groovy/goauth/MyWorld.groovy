@@ -9,6 +9,7 @@ class MyWorld {
     public RESTClient restClient
     private DatastoreService datastoreService
     private ResourceOwnerRepository resourceOwnerRepository
+    private TokenRepository tokenRepository
     private ClientRepository clientRepository
     static RemoteApiOptions remoteOptions = new RemoteApiOptions()
             .server('localhost', 8080)
@@ -20,6 +21,7 @@ class MyWorld {
         datastoreService = DatastoreServiceFactory.datastoreService
         resourceOwnerRepository = new ResourceOwnerRepository(datastore: datastoreService)
         clientRepository = new ClientRepository(datastore: datastoreService)
+        tokenRepository = new TokenRepository(datastore: datastoreService)
     }
 
     def store(ResourceOwner resourceOwner) {
@@ -28,7 +30,7 @@ class MyWorld {
     }
 
     def store(AccessToken accessToken) {
-        resourceOwnerRepository.store accessToken
+        tokenRepository.store accessToken
     }
 
     def store(Client client) {

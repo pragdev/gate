@@ -1,5 +1,6 @@
 package goauth
 
+import goauth.implicitgrant.GrantConverter
 import groovy.json.JsonSlurper
 import spock.lang.Specification
 import spock.lang.Subject
@@ -19,6 +20,7 @@ class AuthorizationControllerSpec extends Specification {
 
     def setup() {
         authorizationController.security = Mock Security
+        authorizationController.converter = new GrantConverter(grantRequestFactory: new GrantRequestFactory())
         request.getQueryString() >> 'response_type=token&client_id=myid'
 
         responseBody = new StringWriter()
@@ -46,7 +48,7 @@ class AuthorizationControllerSpec extends Specification {
 
     def "should deny an access request when the client cannot be identified"() {
         given:
-        authorizationController.security.implicitFlowAccessRequest(*_) >> { throw new EntityNotFound() }
+        authorizationController.security.issueAccessRequest(*_) >> { throw new EntityNotFound() }
 
         when:
         authorizationController.doGet(request, response)
@@ -58,7 +60,7 @@ class AuthorizationControllerSpec extends Specification {
     def "should deny an access request when the resource owner cannot be identified"() {
         given:
         request.getHeader(_) >> authHeader
-        authorizationController.security.implicitFlowAccessRequest(*_) >> { throw new InvalidCredentialsException(new Credentials()) }
+        authorizationController.security.issueAccessRequest(*_) >> { throw new InvalidCredentialsException(new Credentials()) }
 
         when:
         authorizationController.doGet(request, response)
@@ -75,8 +77,8 @@ class AuthorizationControllerSpec extends Specification {
         this.request.getHeader(_) >> "Basic ${"user:pass".bytes.encodeBase64().toString()}"
         def client = new Client(name: 'client')
         def owner = new ResourceOwner(displayName: 'owner')
-        def accessRequest = new AccessRequest(id: "myid", client: client, resourceOwner: owner)
-        authorizationController.security.implicitFlowAccessRequest(*_) >> accessRequest
+        def accessRequest = new ImplicitFlowAccessRequest(id: "myid", client: client, resourceOwner: owner)
+        authorizationController.security.issueAccessRequest(*_) >> accessRequest
 
         when:
         authorizationController.doGet(this.request, response)

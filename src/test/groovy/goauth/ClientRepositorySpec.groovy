@@ -13,8 +13,7 @@ import static goauth.Client.Type.CONFIDENTIAL
 
 class ClientRepositorySpec extends Specification {
 
-    @Subject
-    ClientRepository repository
+    @Subject ClientRepository repository
     LocalServiceTestHelper helper
     DatastoreService datastoreService
     Client client

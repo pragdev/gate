@@ -33,16 +33,6 @@ class ResourceOwnerRepository {
         new ResourceOwner(entity.getProperty('username').toString(), entity.getProperty('password').toString(), entity.getProperty('displayName').toString())
     }
 
-    AccessToken store(AccessToken accessToken) {
-        Entity entity = Entity.make(accessToken.value, AccessToken)
-        entity.setProperty('value', accessToken.value)
-        entity.setProperty('issuedOn', accessToken.issuedOn.time)
-        entity.setProperty('expiresIn', accessToken.expiresIn)
-
-        datastore.put entity
-        accessToken
-    }
-
     private Entity findResourceOwnerBy(String username) {
         def query = datastore.prepare new Query(ResourceOwner.simpleName).setFilter(new Query.FilterPredicate('username', IN, [username]))
         query.asSingleEntity() ?: null

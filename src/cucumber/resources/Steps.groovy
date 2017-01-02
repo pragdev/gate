@@ -1,4 +1,5 @@
 import cucumber.api.DataTable
+import cucumber.api.PendingException
 import cucumber.api.groovy.EN
 import cucumber.api.groovy.Hooks
 import goauth.AccessToken
@@ -109,5 +110,27 @@ Then(~/^the resource owner is redirected to the client$/) { ->
 }
 And(~/^the client receives the access token as a uri fragment$/) { ->
     assert response.headers['Location'].value ==~ /$redirectionUri#access_token=([0-9A-z-]+)&token_type=example&expires_in=(\d+)/
-
+}
+And(~/^the client receives the authorization token as a uri fragment$/) { ->
+    assert response.headers['Location'].value ==~ /$redirectionUri#code=([0-9A-z-]+)&token_type=example&expires_in=(\d+)/
+}
+And(~/^the client has obtained an Authorization Code already$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException()
+}
+When(~/^the client requests an access token at the path "([^"]*)" including the authorization token and the redirect URI$/) { String arg1 ->
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException()
+}
+Then(~/^the authorization server authenticates the client$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException()
+}
+And(~/^verifies the authorization code and the redirection URI matches the one used to obtain it$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException()
+}
+And(~/^the authorization server responds with an access token$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException()
 }

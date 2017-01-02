@@ -9,4 +9,8 @@ class EntityExtension {
        setProperty(property, newValue)
     }
 
+    def getAt(String property) {
+        getProperty(property)
+    }
+
 }

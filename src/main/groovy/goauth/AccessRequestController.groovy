@@ -26,13 +26,14 @@ public class AccessRequestController extends HttpServlet {
 
         try {
             // TODO test invalid json
-            def json = slurper.parseText(request.inputStream.text)
-            def accessRequest = new AccessRequest(id: json.id, status: AccessRequest.Status.valueOf(json.status))
-            def accessToken = security.grantAccess accessRequest
-            def redirectUri = security.redirectUriFor accessRequest.id
+            Map json = slurper.parse(request.inputStream)
+            def accessRequest = new ImplicitFlowAccessRequest(id: json.id, status: AccessRequest.Status.valueOf(json.status))
+            def token = security.grantAccess accessRequest
+            URI redirectUri = security.redirectUriFor accessRequest
+            def (tokenName, tokenValue) = token.describe()
 
             response.status = SC_MOVED_TEMPORARILY
-            response.setHeader('Location', "$redirectUri#access_token=${accessToken.value}&token_type=example&expires_in=3600")
+            response.setHeader('Location', "$redirectUri#${tokenName}=${tokenValue}&token_type=example&expires_in=3600")
 
         } catch (EntityNotFound ex) {
             response.status = SC_NOT_FOUND

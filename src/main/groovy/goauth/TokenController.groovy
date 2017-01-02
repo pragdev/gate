@@ -16,23 +16,21 @@ public class TokenController extends HttpServlet {
 
     Security security
     Presenter presenter
+    AccessTokenRequestConverter converter
 
     @Override
     void init(ServletConfig config) throws ServletException {
         super.init(config)
         security = config.servletContext.getAttribute 'security'
         presenter = config.servletContext.getAttribute 'presenter'
+        converter = config.servletContext.getAttribute 'accessTokenRequestConverter'
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        AuthenticationFlow flow = request.getParameter('grant_type').toUpperCase()
-        if(flow != PASSWORD) {
-            response.status = SC_BAD_REQUEST
-            return
-        }
-
+        def tokenRequest = converter.convert request
         def credentials = request.extractCredentialsFromBody()
-        def token = security.authenticateResourceOwner credentials
+
+        def token = security.issueAccessToken(tokenRequest, credentials)
 
         response.setHeader('Cache-Control', 'no-store')
         response.setHeader('Pragma', 'no-cache')

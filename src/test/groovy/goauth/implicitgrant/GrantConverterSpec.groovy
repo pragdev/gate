@@ -1,14 +1,19 @@
 package goauth.implicitgrant
 
-import goauth.MissingQueryParam
+import goauth.GrantRequestFactory
+import goauth.MissingQueryParamException
 import spock.lang.Specification
 import spock.lang.Subject
 
 import javax.servlet.http.HttpServletRequest
 
-class ImplicitGrantConverterSpec extends Specification {
+class GrantConverterSpec extends Specification {
 
-    @Subject ImplicitGrantConverter converter = new ImplicitGrantConverter()
+    @Subject GrantConverter converter
+
+    def setup() {
+        converter = new GrantConverter(grantRequestFactory: new GrantRequestFactory())
+    }
 
     def 'converts an http request to an implicit grant request'() {
         given:
@@ -39,7 +44,7 @@ class ImplicitGrantConverterSpec extends Specification {
         converter.convert request
 
         then:
-        thrown MissingQueryParam
+        thrown MissingQueryParamException
     }
 
     def 'should NOT throw a missing param exception when an optional param is not given'() {
@@ -52,7 +57,7 @@ class ImplicitGrantConverterSpec extends Specification {
         converter.convert request
 
         then:
-        notThrown MissingQueryParam
+        notThrown MissingQueryParamException
     }
 
 }

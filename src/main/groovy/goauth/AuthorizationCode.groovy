@@ -1,28 +1,18 @@
 package goauth
 
+import com.google.appengine.repackaged.org.joda.time.Seconds
 import groovy.transform.Canonical
 
-import java.lang.Long as Seconds
-
 @Canonical
-class AccessToken extends Token {
+class AuthorizationCode extends Token {
     String value
     Date issuedOn
-    Seconds expiresIn
+    Long expiresIn
 
-    AccessToken(Map properties) {
-        this(properties.issuedOn, properties.expiresIn)
-        if(properties.value) this.value = properties.value
-    }
-
-    AccessToken(Date issuedOn, Seconds expiresIn) {
+    AuthorizationCode() {
         this.value = UUID.randomUUID().toString()
         this.issuedOn = issuedOn
         this.expiresIn = expiresIn
-    }
-
-    AccessToken() {
-        this(new Date(), 3600)
     }
 
     boolean isExpired() {
@@ -35,11 +25,11 @@ class AccessToken extends Token {
     }
 
     String toString() {
-        value
+        this.value
     }
 
     @Override
     def describe() {
-        ['access_token', value]
+        ['code', value]
     }
 }

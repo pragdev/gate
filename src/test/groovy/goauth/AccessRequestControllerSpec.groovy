@@ -80,9 +80,9 @@ class AccessRequestControllerSpec extends Specification {
     def "should update the access request and redirect the client to it's redirection uri and pass the access token as a uri fragment"() {
         given:
         def token = new AccessToken()
-        def redirectionUri = "http://test.com/callback"
+        def redirectionUri = new URI('http://test.com/callback')
         1 * security.grantAccess(_) >> token
-        1 * security.redirectUriFor("validid") >> redirectionUri
+        1 * security.redirectUriFor(_ as AccessRequest) >> redirectionUri
         builder {
             id "validid"
             status GRANTED.toString()

@@ -22,6 +22,7 @@ class TokenControllerSpec extends Specification {
 
         def security = Mock(Security) {
             authenticateResourceOwner(_ as Credentials) >> new AccessToken()
+            issueAccessToken(_, _) >> new AccessToken()
         }
 
         response = Mock(HttpServletResponse) {
@@ -32,7 +33,7 @@ class TokenControllerSpec extends Specification {
             getParameter('grant_type') >> PASSWORD
             extractCredentialsFromBody() >> new Credentials(username: 'test', password: 'secret')
         }
-        controller = new TokenController(security: security, presenter: new Presenter())
+        controller = new TokenController(security: security, presenter: new Presenter(), converter: new AccessTokenRequestConverter(factory: new AccessTokenRequestFactory()))
     }
 
     def "the new token response should be not cacheable"() {
@@ -81,17 +82,6 @@ class TokenControllerSpec extends Specification {
 
     def parse(json) {
         new JsonSlurper().parseText(json)
-    }
-
-    def 'should respond with bad request if the token type is not password'() {
-        given:
-        def request = Mock(HttpServletRequest) { getParameter('grant_type') >> REFRESH_TOKEN }
-
-        when:
-        controller.doPost(request, response)
-
-        then:
-        1 * response.setStatus(SC_BAD_REQUEST)
     }
 
 }

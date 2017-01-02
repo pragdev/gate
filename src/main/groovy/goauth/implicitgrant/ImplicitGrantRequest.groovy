@@ -1,13 +1,23 @@
 package goauth.implicitgrant
 
-import goauth.Required
+import goauth.AccessRequest
+import goauth.AuthorizationCodeAccessRequest
+import goauth.GrantRequest
+import goauth.ImplicitFlowAccessRequest
 
-class ImplicitGrantRequest {
+class ImplicitGrantRequest extends GrantRequest {
 
-    @Required String responseType
-    @Required String clientId
-    String redirectUri
-    String scope
-    String state
+    boolean isValidType() {
+        responseType == 'token'
+    }
 
+    @Override
+    protected void type() {
+        this.responseType = 'token'
+    }
+
+    @Override
+    protected AccessRequest makeAccessRequest(Map args) {
+        return new ImplicitFlowAccessRequest(client: args.client, resourceOwner: args.resourceOwner)
+    }
 }

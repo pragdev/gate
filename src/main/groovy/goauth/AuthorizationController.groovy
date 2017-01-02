@@ -1,7 +1,6 @@
 package goauth
 
-import goauth.implicitgrant.ImplicitGrantConverter
-import goauth.implicitgrant.ImplicitGrantRequest
+import goauth.implicitgrant.GrantConverter
 import groovy.json.JsonBuilder
 import groovy.util.logging.Log
 
@@ -17,20 +16,21 @@ import static javax.servlet.http.HttpServletResponse.*
 public class AuthorizationController extends HttpServlet {
 
     Security security
+    GrantConverter converter
 
     @Override
     void init(ServletConfig config) throws ServletException {
         super.init(config)
         security = config.servletContext.getAttribute 'security'
+        converter = config.servletContext.getAttribute 'grantConverter'
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            def converter = new ImplicitGrantConverter()
-            ImplicitGrantRequest grantRequest = converter.convert request
+            def grantRequest = converter.convert request
             def credentials = request.extractCredentialsFromHeader()
 
-            AccessRequest accessRequest = security.implicitFlowAccessRequest(grantRequest, credentials)
+            AccessRequest accessRequest = security.issueAccessRequest(grantRequest, credentials)
 
             response.contentType = 'application/json'
             response.status = SC_OK
@@ -43,7 +43,7 @@ public class AuthorizationController extends HttpServlet {
         } catch (InvalidCredentialsException ex) {
             log.info "The credentials ($ex.credentials) are not valid"
             response.status = SC_UNAUTHORIZED
-        } catch (MissingQueryParam ex) {
+        } catch (MissingQueryParamException ex) {
             log.info 'Missing params in request'
             response.status = SC_BAD_REQUEST
         } catch (EntityNotFound ex) {

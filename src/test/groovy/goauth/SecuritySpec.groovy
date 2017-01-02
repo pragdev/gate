@@ -1,5 +1,6 @@
 package goauth
 
+import goauth.authorizationcodegrant.AuthorizationCodeGrantRequest
 import goauth.implicitgrant.ImplicitGrantRequest
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -13,17 +14,28 @@ class SecuritySpec extends Specification {
 
     def setup() {
         security = new Security()
+        security.clientsRepository = Mock(ClientRepository) {
+            findBy('client1') >> new Client(id: 'client1')
+        }
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
+            findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'secret', displayName: "ayeye brazorf")
+        }
+        security.accessRequestRepository = Mock(AccessRequestRepository)
+        security.accessRequestFactory = new AccessRequestFactory()
+        security.tokenRepository = Mock(TokenRepository) {
+            store(_ as AccessToken) >> { args -> args.first() }
+        }
+
     }
 
     def "should provide a new Access Token when user credentials are authenticated"() {
         given:
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             1 * exists('antonio') >> true
-            1 * findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'test', displayName: "ayeye brazorf")
-            1 * store(_ as AccessToken) >> { args -> args.first() }
+            1 * findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'secret', displayName: "ayeye brazorf")
         }
 
-        def credentials = new Credentials(username: 'antonio', password: 'test')
+        def credentials = new Credentials(username: 'antonio', password: 'secret')
 
         when:
         AccessToken accessToken = security.authenticateResourceOwner credentials
@@ -34,13 +46,12 @@ class SecuritySpec extends Specification {
 
     def "should throw an invalid credential exception when the username is not present in the repository"() {
         given:
-
+        0 * security.tokenRepository.store(_ as AccessToken)
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             exists('wrongusername') >> false
-            0 * store(_ as AccessToken)
         }
 
-        def credentials = new Credentials(username: 'wrongusername', password: 'test')
+        def credentials = new Credentials(username: 'wrongusername', password: 'secret')
 
         when:
         security.authenticateResourceOwner credentials
@@ -51,11 +62,10 @@ class SecuritySpec extends Specification {
 
     def "should throw an invalid credential exception when the user password does not match the stored password"() {
         given:
-
+        0 * security.tokenRepository.store(_ as AccessToken)
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             exists('antonio') >> true
-            findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'test', displayName: 'Ayeye Brazorf')
-            0 * store(_ as AccessToken)
+            findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'secret', displayName: 'Ayeye Brazorf')
         }
 
         def credentials = new Credentials(username: 'antonio', password: 'wrong')
@@ -69,12 +79,12 @@ class SecuritySpec extends Specification {
 
     def "should provide a new Access Token when client credentials are authenticated"() {
         given:
+        0 * security.tokenRepository.store(_ as AccessToken)
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             1 * exists('antonio') >> true
-            1 * findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'test', displayName: 'Ayeye Brazorf')
-            1 * store(_ as AccessToken) >> { args -> args.first() }
+            1 * findBy('antonio') >> new ResourceOwner(username: 'antonio', password: 'secret', displayName: 'Ayeye Brazorf')
         }
-        def credentials = new Credentials(username: 'antonio', password: 'test')
+        def credentials = new Credentials(username: 'antonio', password: 'secret')
 
         when:
         AccessToken accessToken = security.authenticateResourceOwner credentials
@@ -85,14 +95,13 @@ class SecuritySpec extends Specification {
 
     def "should throw an invalid credential exception when the client name is not present in the repository"() {
         given:
-
+        0 * security.tokenRepository.store(_ as AccessToken)
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             exists('wrongclientname') >> false
-            0 * store(_ as AccessToken)
         }
 
         when:
-        security.authenticateResourceOwner new Credentials(username: 'wrongclientname', password: 'test')
+        security.authenticateResourceOwner new Credentials(username: 'wrongclientname', password: 'secret')
 
         then:
         thrown InvalidCredentialsException
@@ -100,11 +109,10 @@ class SecuritySpec extends Specification {
 
     def "should throw an invalid credential exception when the client password does not match the stored password"() {
         given:
-
+        0 * security.tokenRepository.store(_ as AccessToken)
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             exists('myapp') >> true
-            findBy('myapp') >> new ResourceOwner(username: 'myapp', password: 'test', displayName: 'Ayeye Brazorf')
-            0 * store(_ as AccessToken)
+            findBy('myapp') >> new ResourceOwner(username: 'myapp', password: 'secret', displayName: 'Ayeye Brazorf')
         }
 
         def credentials = new Credentials(username: 'myapp', password: 'wrong')
@@ -135,7 +143,7 @@ class SecuritySpec extends Specification {
 
     def "should identify a resource owner by credentials"() {
         given:
-        def expectedOwner = new ResourceOwner(username: 'user', password: 'test', displayName: "Ayeye Brazorf")
+        def expectedOwner = new ResourceOwner(username: 'user', password: 'secret', displayName: "Ayeye Brazorf")
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             findBy(expectedOwner.username) >> expectedOwner
         }
@@ -149,7 +157,7 @@ class SecuritySpec extends Specification {
 
     def "should throw an invalid credentials exception when resource owner's credentials are invalid"() {
         given:
-        def expectedOwner = new ResourceOwner(username: 'user', password: 'test', displayName: "Ayeye Brazorf")
+        def expectedOwner = new ResourceOwner(username: 'user', password: 'secret', displayName: "Ayeye Brazorf")
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) {
             findBy(expectedOwner.username) >> storedOwner
         }
@@ -180,9 +188,9 @@ class SecuritySpec extends Specification {
         given:
         security.accessRequestRepository = Mock(AccessRequestRepository) {
             exists(_) >> true
-            findBy(_) >> new AccessRequest(id: "existingid", status: GRANTED, client: new Client())
+            findBy(_) >> new ImplicitFlowAccessRequest(id: "existingid", status: GRANTED, client: new Client())
         }
-        def accessRequest = new AccessRequest(id: "existingid", status: GRANTED)
+        def accessRequest = new ImplicitFlowAccessRequest(id: "existingid", status: GRANTED)
 
         when:
         def accessToken = security.grantAccess accessRequest
@@ -220,46 +228,118 @@ class SecuritySpec extends Specification {
     def "should provide redirection uri for an access request id"() {
         given:
         def expectedUri = new URI('http/test.com/callback')
+        def accessRequest = new ImplicitFlowAccessRequest(id: '123', client: new Client(redirectionUri: expectedUri))
+
         security.accessRequestRepository = Mock(AccessRequestRepository) {
-            1 * findBy(_) >> new AccessRequest(id: '123', client: new Client(redirectionUri: expectedUri))
+            1 * findBy(_) >> accessRequest
         }
 
-        when:
-        def uri = security.redirectUriFor '123'
-
-        then:
-        uri == expectedUri
+        expect:
+        security.redirectUriFor(accessRequest) == expectedUri
     }
 
-    def "should deny an access request when the client cannot be identified"() {
+    def "should deny an access request when the client cannot be identified when issuing an access request for implicit flow"() {
         given:
-        def grantRequest = new ImplicitGrantRequest(clientId: 'client1')
+        def grantRequest = new ImplicitGrantRequest(clientId: 'client1', responseType: 'token')
         security.clientsRepository = Mock(ClientRepository) { findBy('client1') >> null }
         def credentials = new Credentials(username: 'test', password: 'secret')
 
 
         when:
-        security.implicitFlowAccessRequest(grantRequest, credentials)
+        security.issueAccessRequest(grantRequest, credentials)
 
         then:
         thrown EntityNotFound
     }
 
-    def "should deny an access request when the resource owner cannot be identified"() {
+    def "should deny an access request when the resource owner cannot be identified when issuing an access request for implicit flow"() {
         given:
-        def grantRequest = new ImplicitGrantRequest(clientId: 'client1')
+        def grantRequest = new ImplicitGrantRequest(clientId: 'client1', responseType: 'token')
         security.clientsRepository = Mock(ClientRepository) { findBy('client1') >> new Client() }
         security.resourceOwnerRepository = Mock(ResourceOwnerRepository) { findBy('test') >> new ResourceOwner() }
 
         def credentials = new Credentials(username: 'test', password: 'secret')
 
         when:
-        security.implicitFlowAccessRequest(grantRequest, credentials)
+        security.issueAccessRequest(grantRequest, credentials)
 
         then:
         thrown InvalidCredentialsException
 
         where:
         authHeader << ["Basic ${"user:pass".bytes.encodeBase64().toString()}", null]
+    }
+
+    def 'should throw an exception when response type is not token when issuing an access request for implicit flow'() {
+        given:
+        def grantRequest = new ImplicitGrantRequest(clientId: 'client1', responseType: 'code')
+        def credentials = new Credentials(username: 'test', password: 'secret')
+
+        when:
+        security.issueAccessRequest(grantRequest, credentials)
+
+        then:
+        thrown InvalidResponseTypeException
+    }
+
+    def "should deny an access request when the client cannot be identified when issuing an access request for authorization code flow"() {
+        given:
+        def grantRequest = new AuthorizationCodeGrantRequest(clientId: 'client1', responseType: 'code')
+        security.clientsRepository = Mock(ClientRepository) { findBy('client1') >> null }
+        def credentials = new Credentials(username: 'test', password: 'secret')
+
+        when:
+        security.issueAccessRequest(grantRequest, credentials)
+
+        then:
+        thrown EntityNotFound
+    }
+
+    def "should deny an access request when the resource owner cannot be identified when issuing an access request for authorization flow"() {
+        given:
+        def grantRequest = new AuthorizationCodeGrantRequest(clientId: 'client1', responseType: 'code')
+        security.clientsRepository = Mock(ClientRepository) { findBy('client1') >> new Client() }
+        security.resourceOwnerRepository = Mock(ResourceOwnerRepository) { findBy('test') >> new ResourceOwner() }
+
+        def credentials = new Credentials(username: 'test', password: 'secret')
+
+        when:
+        security.issueAccessRequest(grantRequest, credentials)
+
+        then:
+        thrown InvalidCredentialsException
+
+        where:
+        authHeader << ["Basic ${"user:pass".bytes.encodeBase64().toString()}", null]
+    }
+
+    def 'should throw an exception when response type is not code for the authorization code grant'() {
+        given:
+        def grantRequest = new AuthorizationCodeGrantRequest(clientId: 'client1', responseType: 'token')
+        def credentials = new Credentials(username: 'test', password: 'secret')
+
+        when:
+        security.issueAccessRequest(grantRequest, credentials)
+
+        then:
+        thrown InvalidResponseTypeException
+    }
+
+    def 'should provide an Access Request for the authorization code grant'() {
+        given:
+        def grantRequest = new AuthorizationCodeGrantRequest(clientId: 'client1', responseType: 'code')
+        def credentials = new Credentials(username: 'antonio', password: 'secret')
+
+        when:
+        AccessRequest accessRequest = security.issueAccessRequest(grantRequest, credentials)
+
+        then:
+        with(accessRequest) {
+            client.id == 'client1'
+            resourceOwner.credentials == credentials
+            id =~ /[A-z0-9-]+/
+            status == PENDING
+        }
+        1 * security.accessRequestRepository.store(_ as AccessRequest) >> { it.first() }
     }
 }

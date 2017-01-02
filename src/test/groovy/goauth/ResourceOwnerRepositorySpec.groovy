@@ -67,17 +67,6 @@ class ResourceOwnerRepositorySpec extends Specification {
         repository.findBy('wrong') == null
     }
 
-    def "should store an access token in the datastore"() {
-        given:
-        def accessToken = new AccessToken()
-
-        when:
-        repository.store accessToken
-
-        then:
-        def numberOfTokens = datastoreService.prepare(new Query(AccessToken.simpleName)).countEntities(withLimit(10))
-        numberOfTokens == 1
-    }
 }
 
 

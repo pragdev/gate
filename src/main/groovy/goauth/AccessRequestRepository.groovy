@@ -10,6 +10,7 @@ class AccessRequestRepository {
     DatastoreService datastore = DatastoreServiceFactory.datastoreService
     ResourceOwnerRepository resourceOwnerRepository
     ClientRepository clientsRepository
+    AccessRequestFactory accessRequestFactory
 
     AccessRequest store(AccessRequest accessRequest) {
         if (!accessRequest.id) throw new IllegalArgumentException('An accessRequest id is required')
@@ -19,6 +20,7 @@ class AccessRequestRepository {
         entity['status'] = accessRequest.status.name()
         entity['client'] = accessRequest.client?.id
         entity['resourceOwner'] = accessRequest.resourceOwner?.username
+        entity['type'] = accessRequest.class.simpleName
 
         datastore.put entity
         accessRequest
@@ -37,16 +39,12 @@ class AccessRequestRepository {
         def entity = findAccessRequestBy id
         if (!entity) return null
 
-        def client = entity.getProperty('client').toString()
+        def clientId = entity.getProperty('client').toString()
         def name = entity.getProperty('resourceOwner').toString()
         def resourceOwner = resourceOwnerRepository.findBy name
+        def client = clientsRepository.findBy clientId
 
-        new AccessRequest(
-                id: entity.getProperty('id').toString(),
-                status: entity.getProperty('status').toString(),
-                client: clientsRepository.findBy(client),
-                resourceOwner: resourceOwner
-        )
+        accessRequestFactory.make(entity, client, resourceOwner)
     }
 
     private Entity findAccessRequestBy(String id) {
