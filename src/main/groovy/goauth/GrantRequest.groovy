@@ -7,11 +7,6 @@ abstract class GrantRequest {
     String scope
     String state
 
-    GrantRequest(Map args) {
-        super(args)
-        type()
-    }
-
     GrantRequest() {
         super()
         type()

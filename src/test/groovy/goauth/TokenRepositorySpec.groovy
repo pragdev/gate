@@ -37,7 +37,19 @@ class TokenRepositorySpec extends Specification {
         repository.store accessToken
 
         then:
-        def numberOfTokens = datastoreService.prepare(new Query(AccessToken.simpleName)).countEntities(withLimit(10))
+        def numberOfTokens = datastoreService.prepare(new Query(Token.simpleName)).countEntities(withLimit(10))
+        numberOfTokens == 1
+    }
+
+    def "should store an authorization code in the datastore"() {
+        given:
+        def authorizationCode = new AuthorizationCode()
+
+        when:
+        repository.store authorizationCode
+
+        then:
+        def numberOfTokens = datastoreService.prepare(new Query(Token.simpleName)).countEntities(withLimit(10))
         numberOfTokens == 1
     }
 }

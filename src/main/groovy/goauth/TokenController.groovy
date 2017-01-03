@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import static goauth.AuthenticationFlow.PASSWORD
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 
 @Log
@@ -27,16 +26,21 @@ public class TokenController extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        def tokenRequest = converter.convert request
-        def credentials = request.extractCredentialsFromBody()
+        try {
+            def tokenRequest = converter.convert request
+            def credentials = request.extractCredentialsFromBody()
+            if (!credentials) credentials = request.extractCredentialsFromHeader()
 
-        def token = security.issueAccessToken(tokenRequest, credentials)
+            def token = security.issueAccessToken(tokenRequest, credentials)
 
-        response.setHeader('Cache-Control', 'no-store')
-        response.setHeader('Pragma', 'no-cache')
+            response.setHeader('Cache-Control', 'no-store')
+            response.setHeader('Pragma', 'no-cache')
 
-        response.contentType = 'application/json'
-        response.writer << presenter.present(token)
+            response.contentType = 'application/json'
+            response.writer << presenter.present(token)
+        } catch (MissingQueryParamException ex) {
+            response.sendError(SC_BAD_REQUEST, 'missing required param')
+        }
     }
 
 }

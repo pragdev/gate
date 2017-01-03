@@ -3,6 +3,19 @@ package goauth
 import groovy.transform.Canonical
 
 @Canonical
-class AccessTokenPasswordFlowRequest {
-    String grantType
+class AccessTokenPasswordFlowRequest extends AccessTokenRequest {
+    @Override
+    protected void type() {
+        grantType = 'password'
+    }
+
+    @Override
+    boolean isValidType() {
+        grantType == 'password'
+    }
+
+    @Override
+    void authenticate(Credentials credentials, Security security) {
+        security.authenticateResourceOwner credentials
+    }
 }

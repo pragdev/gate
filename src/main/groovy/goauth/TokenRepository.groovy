@@ -7,13 +7,14 @@ import com.google.appengine.api.datastore.Entity
 class TokenRepository {
     DatastoreService datastore = DatastoreServiceFactory.datastoreService
 
-    AccessToken store(AccessToken accessToken) {
-        Entity entity = Entity.make(accessToken.value, AccessToken)
-        entity['value'] = accessToken.value
-        entity['issuedOn'] = accessToken.issuedOn.time
-        entity['expiresIn'] = accessToken.expiresIn
+    Token store(Token token) {
+        Entity entity = Entity.make(token.value, Token)
+        entity['value'] = token.value
+        entity['issuedOn'] = token.issuedOn.time
+        entity['expiresIn'] = token.expiresIn
+        entity['type'] = token.class.simpleName
 
         datastore.put entity
-        accessToken
+        token
     }
 }

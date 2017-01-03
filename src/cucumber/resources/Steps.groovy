@@ -3,6 +3,7 @@ import cucumber.api.PendingException
 import cucumber.api.groovy.EN
 import cucumber.api.groovy.Hooks
 import goauth.AccessToken
+import goauth.AuthorizationCode
 import goauth.Client
 import goauth.Credentials
 import goauth.ResourceOwner
@@ -10,6 +11,7 @@ import groovy.json.JsonSlurper
 
 import static goauth.Client.Type.CONFIDENTIAL
 import static groovyx.net.http.ContentType.URLENC
+import static java.lang.Enum.valueOf
 
 this.metaClass.mixin(Hooks)
 this.metaClass.mixin(EN)
@@ -77,7 +79,8 @@ Given(~/^a valid Client:$/) { table ->
     redirectionUri = clientData.redirectionUri
 
     credentials = new Credentials(id, secret)
-    store new Client(id: id, secret: secret, name: "my display name", redirectionUri: new URI(redirectionUri), type: CONFIDENTIAL)
+    client = new Client(id: id, secret: secret, name: "my display name", redirectionUri: new URI(redirectionUri), type: CONFIDENTIAL)
+    store client
 }
 
 Given(~/^a authentication server administrator has already obtained an access token$/) { ->
@@ -115,22 +118,28 @@ And(~/^the client receives the authorization token as a uri fragment$/) { ->
     assert response.headers['Location'].value ==~ /$redirectionUri#code=([0-9A-z-]+)&token_type=example&expires_in=(\d+)/
 }
 And(~/^the client has obtained an Authorization Code already$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
+
 }
-When(~/^the client requests an access token at the path "([^"]*)" including the authorization token and the redirect URI$/) { String arg1 ->
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
+And(~/^the client has obtained an Authorization Code already with value "([^"]*)" and redirect uri "([^"]*)"$/) { String value, String redirectionUri ->
+    def code = new AuthorizationCode()
+    code.value = value
+    store code
+}
+When(~/^the client requests an access token at the path "([^"]*)" including:$/) { String path, DataTable table ->
+    def data = table.asMaps(String, String).first()
+    restClient.setHeaders([Authorization: "Basic ${client.credentials.encode()}"])
+    response = restClient.post path: path, body: [grant_type: data.grant_type, code: data.code, redirect_uri: data.redirect_uri], requestContentType: URLENC
 }
 Then(~/^the authorization server authenticates the client$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
+    assert response.status == 200
 }
 And(~/^verifies the authorization code and the redirection URI matches the one used to obtain it$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
+
 }
 And(~/^the authorization server responds with an access token$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
+    def responseBody = response.data
+    assert responseBody.access_token ==~ /[A-z0-9-]+/
+    assert responseBody.token_type ==~ 'bearer'
+    assert responseBody.expires_in == 3600
 }
+

@@ -11,7 +11,7 @@ class AuthorizationCodeGrantRequest extends GrantRequest {
 
     @Override
     protected void type() {
-        this.responseType = 'code'
+        responseType = 'code'
     }
 
     @Override

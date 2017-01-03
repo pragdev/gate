@@ -4,7 +4,6 @@ import groovy.util.logging.Log
 
 import static goauth.AccessRequest.Status.DENIED
 import static goauth.AccessRequest.Status.GRANTED
-import static goauth.AuthenticationFlow.PASSWORD
 
 enum AuthenticationFlow {
     CLIENT_CREDENTIALS, PASSWORD, REFRESH_TOKEN, AUTHORIZATION_CODE
@@ -18,22 +17,18 @@ class Security {
     AccessRequestFactory accessRequestFactory
     TokenRepository tokenRepository
 
-    AccessToken authenticateResourceOwner(Credentials credentials) throws InvalidCredentialsException {
+    void authenticateResourceOwner(Credentials credentials) throws InvalidCredentialsException {
         if (!resourceOwnerRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
 
         ResourceOwner storedResourceOwner = resourceOwnerRepository.findBy credentials.username
         if (!storedResourceOwner?.accept(credentials)) throw new InvalidCredentialsException(credentials)
-
-        tokenRepository.store new AccessToken()
     }
 
-    AccessToken authenticateClient(Credentials credentials) throws InvalidCredentialsException {
+    void authenticateClient(Credentials credentials) throws InvalidCredentialsException {
         if (!clientsRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
 
         Client storedClient = clientsRepository.findBy(credentials.username)
         if (!storedClient.accept(credentials)) throw new InvalidCredentialsException(credentials)
-
-        tokenRepository.store new AccessToken()
     }
 
     Client register(Client client) {
@@ -78,7 +73,7 @@ class Security {
     }
 
     AccessRequest issueAccessRequest(GrantRequest grantRequest, Credentials credentials) {
-        if(!grantRequest.validType) throw new InvalidResponseTypeException()
+        if (!grantRequest.validType) throw new InvalidResponseTypeException()
 
         Client client = findClientBy grantRequest.clientId
         if (!client) throw new EntityNotFound()
@@ -88,12 +83,10 @@ class Security {
         makeAccessRequestFor(client, owner, grantRequest)
     }
 
-    AccessToken issueAccessToken(AccessTokenPasswordFlowRequest tokenRequest, Credentials credentials) {
-        AuthenticationFlow flow = tokenRequest.grantType.toUpperCase()
-        if(flow != PASSWORD) throw new InvalidGrantTypeException()
+    AccessToken issueAccessToken(AccessTokenRequest tokenRequest, Credentials credentials) {
+        if (!tokenRequest.validType) throw new InvalidGrantTypeException()
 
-        def token = authenticateResourceOwner credentials
-
-        return token
+        tokenRequest.authenticate credentials, this
+        tokenRepository.store new AccessToken()
     }
 }

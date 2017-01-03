@@ -36,4 +36,8 @@ class MyWorld {
     def store(Client client) {
         clientRepository.store client
     }
+
+    def store(AuthorizationCode code) {
+        tokenRepository.store code
+    }
 }

@@ -46,8 +46,10 @@ Feature: The authorization code grant type is used to obtain both access tokens 
     And a valid Resource Owner:
       | username | password | displayName   |
       | owner    | test2    | ayeye brazorf |
-    And the client has obtained an Authorization Code already
-    When the client requests an access token at the path "/token" including the authorization token and the redirect URI
+    And the client has obtained an Authorization Code already with value "AB123" and redirect uri "http://mydomain/callback"
+    When the client requests an access token at the path "/token" including:
+      | grant_type         | code  | redirect_uri             |
+      | authorization_code | AB123 | http://mydomain/callback |
     Then the authorization server authenticates the client
     And verifies the authorization code and the redirection URI matches the one used to obtain it
     And the authorization server responds with an access token

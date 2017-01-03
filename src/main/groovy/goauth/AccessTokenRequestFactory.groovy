@@ -1,6 +1,7 @@
 package goauth
 
 import static goauth.AuthenticationFlow.AUTHORIZATION_CODE
+import static goauth.AuthenticationFlow.CLIENT_CREDENTIALS
 import static goauth.AuthenticationFlow.PASSWORD
 import static goauth.AuthenticationFlow.REFRESH_TOKEN
 
@@ -14,10 +15,16 @@ class AccessTokenRequestFactory {
                 return makeAccessTokenAuthorizationCodeFlowRequest(args)
             case REFRESH_TOKEN:
                 // TODO makeRefreshToken
-                return makeAccessTokenPasswordFlowRequest(args)
+                return null
+            case CLIENT_CREDENTIALS:
+                return makeAccessTokenClientCredentialsFlowRequest(args)
             default:
                 throw new IllegalArgumentException()
         }
+    }
+
+    AccessTokenClientCredentialsFlowRequest makeAccessTokenClientCredentialsFlowRequest(Map args) {
+        new AccessTokenClientCredentialsFlowRequest(grantType: args.grantType)
     }
 
     AccessTokenAuthorizationCodeFlowRequest makeAccessTokenAuthorizationCodeFlowRequest(Map args) {

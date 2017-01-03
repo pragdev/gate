@@ -18,7 +18,7 @@ Feature: The client credentials (or other forms of client authentication) can
     Given a valid Client:
       | id    | secret | redirectionUri           |
       | myapp | test   | http://test.com/callback |
-    When the client makes a POST request to the Authorization Server at the path "/clienttoken"
+    When the client makes a POST request to the Authorization Server at the path "/token"
     And the request uses the basic authentication scheme
     And the body "application/x-www-form-urlencoded" contains the parameters:
       | grant_type         |

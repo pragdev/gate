@@ -5,18 +5,15 @@ import groovy.transform.TupleConstructor
 
 @TupleConstructor
 @Canonical
-class AccessTokenAuthorizationCodeFlowRequest extends AccessTokenRequest {
-    @Required String authorizationCode
-    URI redirectUri
-
+class AccessTokenClientCredentialsFlowRequest extends AccessTokenRequest {
     @Override
     protected void type() {
-        grantType = 'authorization_code'
+        grantType = 'client_credentials'
     }
 
     @Override
     boolean isValidType() {
-        grantType == 'authorization_code'
+        grantType == 'client_credentials'
     }
 
     @Override
