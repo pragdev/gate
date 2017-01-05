@@ -1,5 +1,9 @@
 package goauth
 
+import goauth.flows.authorizationcode.AccessTokenAuthorizationCodeFlowRequest
+import goauth.flows.clientcredentials.AccessTokenClientCredentialsFlowRequest
+import goauth.flows.resourceownerpasswordcredentials.AccessTokenPasswordFlowRequest
+
 import static goauth.AuthenticationFlow.AUTHORIZATION_CODE
 import static goauth.AuthenticationFlow.CLIENT_CREDENTIALS
 import static goauth.AuthenticationFlow.PASSWORD

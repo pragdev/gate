@@ -1,5 +1,6 @@
 package goauth
 
+import goauth.flows.implicit.ImplicitFlowAccessRequest
 import goauth.implicitgrant.GrantConverter
 import groovy.json.JsonSlurper
 import spock.lang.Specification

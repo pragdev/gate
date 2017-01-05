@@ -1,5 +1,7 @@
-package goauth
+package goauth.flows.implicit
 
+import goauth.AccessRequest
+import goauth.AccessToken
 import groovy.transform.Canonical
 
 @Canonical

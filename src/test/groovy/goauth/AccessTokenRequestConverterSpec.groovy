@@ -1,5 +1,6 @@
 package goauth
 
+import goauth.flows.authorizationcode.AccessTokenAuthorizationCodeFlowRequest
 import spock.lang.Specification
 import spock.lang.Subject
 

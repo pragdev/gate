@@ -1,6 +1,6 @@
 package goauth
 
-import goauth.authorizationcodegrant.AuthorizationCodeGrantRequest
+import goauth.flows.authorizationcode.AuthorizationCodeGrantRequest
 import goauth.implicitgrant.ImplicitGrantRequest
 
 class GrantRequestFactory {

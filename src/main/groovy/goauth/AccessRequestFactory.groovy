@@ -1,6 +1,8 @@
 package goauth
 
 import com.google.appengine.api.datastore.Entity
+import goauth.flows.authorizationcode.AuthorizationCodeAccessRequest
+import goauth.flows.implicit.ImplicitFlowAccessRequest
 
 class AccessRequestFactory {
     AccessRequest make(Map args) {
@@ -29,7 +31,5 @@ class AccessRequestFactory {
             default:
                 throw new IllegalArgumentException()
         }
-
-
     }
 }

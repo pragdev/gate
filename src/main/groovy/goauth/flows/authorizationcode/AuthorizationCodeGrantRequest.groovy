@@ -1,6 +1,6 @@
-package goauth.authorizationcodegrant
+package goauth.flows.authorizationcode
 
-import goauth.AuthorizationCodeAccessRequest
+import goauth.flows.authorizationcode.AuthorizationCodeAccessRequest
 import goauth.GrantRequest
 
 class AuthorizationCodeGrantRequest extends GrantRequest {

@@ -1,9 +1,8 @@
 package goauth.implicitgrant
 
 import goauth.AccessRequest
-import goauth.AuthorizationCodeAccessRequest
 import goauth.GrantRequest
-import goauth.ImplicitFlowAccessRequest
+import goauth.flows.implicit.ImplicitFlowAccessRequest
 
 class ImplicitGrantRequest extends GrantRequest {
 

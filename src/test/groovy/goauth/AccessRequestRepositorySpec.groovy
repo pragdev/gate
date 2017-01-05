@@ -5,6 +5,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory
 import com.google.appengine.api.datastore.Query
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper
+import goauth.flows.authorizationcode.AuthorizationCodeAccessRequest
+import goauth.flows.implicit.ImplicitFlowAccessRequest
 import spock.lang.Specification
 import spock.lang.Subject
 

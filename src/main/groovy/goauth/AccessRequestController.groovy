@@ -1,5 +1,6 @@
 package goauth
 
+import goauth.flows.implicit.ImplicitFlowAccessRequest
 import groovy.json.JsonSlurper
 
 import javax.servlet.ServletConfig
@@ -23,10 +24,10 @@ public class AccessRequestController extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         try {
             // TODO test invalid json
             Map json = slurper.parse(request.inputStream)
+            // TODO introduce factory
             def accessRequest = new ImplicitFlowAccessRequest(id: json.id, status: AccessRequest.Status.valueOf(json.status))
             def token = security.grantAccess accessRequest
             URI redirectUri = security.redirectUriFor accessRequest

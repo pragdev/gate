@@ -1,5 +1,8 @@
-package goauth
+package goauth.flows.resourceownerpasswordcredentials
 
+import goauth.AccessTokenRequest
+import goauth.Credentials
+import goauth.Security
 import groovy.transform.Canonical
 
 @Canonical

@@ -17,7 +17,7 @@ class ContextListener implements ServletContextListener {
         def datastoreService = DatastoreServiceFactory.datastoreService
         def resourceOwnerRepository = new ResourceOwnerRepository(datastore: datastoreService)
         def clientsRepository = new ClientRepository(datastore: datastoreService)
-        def tokenRepository = new TokenRepository(datastore: datastoreService)
+        def tokenRepository = new TokenRepository(datastore: datastoreService, tokenFactory: new TokenFactory())
         def accessRequestRepository = new AccessRequestRepository(
                 datastore: datastoreService,
                 resourceOwnerRepository: resourceOwnerRepository,

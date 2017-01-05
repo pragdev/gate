@@ -1,5 +1,7 @@
-package goauth
+package goauth.flows.authorizationcode
 
+import goauth.AccessRequest
+import goauth.AuthorizationCode
 import groovy.transform.Canonical
 
 @Canonical

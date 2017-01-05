@@ -1,5 +1,8 @@
-package goauth
+package goauth.flows.clientcredentials
 
+import goauth.AccessTokenRequest
+import goauth.Credentials
+import goauth.Security
 import groovy.transform.Canonical
 import groovy.transform.TupleConstructor
 

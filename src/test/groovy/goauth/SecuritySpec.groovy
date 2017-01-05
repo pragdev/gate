@@ -1,6 +1,8 @@
 package goauth
 
-import goauth.authorizationcodegrant.AuthorizationCodeGrantRequest
+import goauth.flows.authorizationcode.AuthorizationCodeGrantRequest
+import goauth.flows.authorizationcode.AccessTokenAuthorizationCodeFlowRequest
+import goauth.flows.implicit.ImplicitFlowAccessRequest
 import goauth.implicitgrant.ImplicitGrantRequest
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -333,10 +335,37 @@ class SecuritySpec extends Specification {
         grantType << ['wrong type', 'password']
     }
 
+    def 'should throw an invalid token when the authorization code is not found when issuing an access token for the authorization code flow'() {
+        given:
+        def codeFlowRequest = new AccessTokenAuthorizationCodeFlowRequest(grantType: 'authorization_code', authorizationCode: 'ABC')
+        def credentials = new Credentials(username: 'client1', password: 'secret')
+        security.tokenRepository.findBy('ABC', AuthorizationCode) >> null
+
+        when:
+        security.issueAccessToken(codeFlowRequest, credentials)
+
+        then:
+        thrown InvalidTokenException
+    }
+
+    def 'should throw an invalid token when the authorization code is expired when issuing an access token for the authorization code flow'() {
+        given:
+        def codeFlowRequest = new AccessTokenAuthorizationCodeFlowRequest(grantType: 'authorization_code', authorizationCode: 'ABC')
+        def credentials = new Credentials(username: 'client1', password: 'secret')
+        security.tokenRepository.findBy('ABC', AuthorizationCode) >> new AuthorizationCode(value: 'ABC', issuedOn: new Date() - 1)
+
+        when:
+        security.issueAccessToken(codeFlowRequest, credentials)
+
+        then:
+        thrown InvalidTokenException
+    }
+
     def 'issues a new access token for the authorization code flow'() {
         given:
-        def codeFlowRequest = new AccessTokenAuthorizationCodeFlowRequest(grantType: 'authorization_code')
+        def codeFlowRequest = new AccessTokenAuthorizationCodeFlowRequest(grantType: 'authorization_code', authorizationCode: 'ABC')
         def credentials = new Credentials(username: 'client1', password: 'secret')
+        security.tokenRepository.findBy('ABC', AuthorizationCode) >> new AuthorizationCode(value: 'ABC')
 
         when:
         def accessToken = security.issueAccessToken(codeFlowRequest, credentials)

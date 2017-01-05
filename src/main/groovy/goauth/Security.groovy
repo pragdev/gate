@@ -1,5 +1,8 @@
 package goauth
 
+import goauth.flows.authorizationcode.AccessTokenAuthorizationCodeFlowRequest
+import goauth.flows.clientcredentials.AccessTokenClientCredentialsFlowRequest
+import goauth.flows.resourceownerpasswordcredentials.AccessTokenPasswordFlowRequest
 import groovy.util.logging.Log
 
 import static goauth.AccessRequest.Status.DENIED
@@ -87,6 +90,17 @@ class Security {
         if (!tokenRequest.validType) throw new InvalidGrantTypeException()
 
         tokenRequest.authenticate credentials, this
+        handle tokenRequest
+
         tokenRepository.store new AccessToken()
     }
+
+    def handle(AccessTokenAuthorizationCodeFlowRequest request) {
+        def token = tokenRepository.findBy request.authorizationCode, AuthorizationCode
+        if(!token || token.expired) throw new InvalidTokenException()
+    }
+
+    def handle(AccessTokenPasswordFlowRequest request) {}
+    def handle(AccessTokenClientCredentialsFlowRequest request) {}
+
 }
