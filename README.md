@@ -2,4 +2,4 @@
 
 
 # goauth
-OAuth server library written in Groovy for a servlet container. Development in progress.
+OAuth server library written in Groovy for a Google app engine. Development in progress.
