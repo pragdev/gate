@@ -1,4 +1,4 @@
 moduleName=pattern-extension
 moduleVersion=1.0
-extensionClasses=goauth.HttpServletRequestExtension,goauth.EntityExtension
-staticExtensionClasses=goauth.StaticEntityExtension
+extensionClasses=uk.co.pragmaticdevelopers.gate.HttpServletRequestExtension,uk.co.pragmaticdevelopers.gate.extensions.EntityExtension
+staticExtensionClasses=uk.co.pragmaticdevelopers.gate.extensions.StaticEntityExtension

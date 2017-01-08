@@ -7,7 +7,7 @@
  * user guide available at https://docs.gradle.org/2.14/userguide/tutorial_groovy_projects.html
  */
 
-// Apply the groovy plugin to add support for Groovy
+// Apply the groovy plugin to add uk.co.pragmaticdevelopers.gate.support for Groovy
 apply plugin: 'groovy'
 apply plugin: 'war'
 apply plugin: 'appengine'

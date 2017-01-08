@@ -1,6 +1,6 @@
 import com.google.appengine.tools.remoteapi.RemoteApiInstaller
 import cucumber.api.Scenario
-import goauth.MyWorld
+import uk.co.pragmaticdevelopers.gate.MyWorld
 
 import static cucumber.api.groovy.Hooks.*
 

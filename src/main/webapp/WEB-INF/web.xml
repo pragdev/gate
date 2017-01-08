@@ -17,7 +17,7 @@
 
     <servlet>
         <servlet-name>TokenController</servlet-name>
-        <servlet-class>goauth.TokenController</servlet-class>
+        <servlet-class>uk.co.pragmaticdevelopers.gate.TokenController</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -27,7 +27,7 @@
 
     <servlet>
         <servlet-name>ClientController</servlet-name>
-        <servlet-class>goauth.ClientsController</servlet-class>
+        <servlet-class>uk.co.pragmaticdevelopers.gate.ClientsController</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -37,7 +37,7 @@
 
     <servlet>
         <servlet-name>AuthorizationController</servlet-name>
-        <servlet-class>goauth.AuthorizationController</servlet-class>
+        <servlet-class>uk.co.pragmaticdevelopers.gate.AuthorizationController</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -47,7 +47,7 @@
 
     <servlet>
         <servlet-name>AccessRequestController</servlet-name>
-        <servlet-class>goauth.AccessRequestController</servlet-class>
+        <servlet-class>uk.co.pragmaticdevelopers.gate.AccessRequestController</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -57,7 +57,7 @@
 
     <listener>
         <listener-class>
-            goauth.ContextListener
+            uk.co.pragmaticdevelopers.gate.ContextListener
         </listener-class>
     </listener>
 

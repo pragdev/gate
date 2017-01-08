@@ -1,17 +1,15 @@
 import cucumber.api.DataTable
-import cucumber.api.PendingException
 import cucumber.api.groovy.EN
 import cucumber.api.groovy.Hooks
-import goauth.AccessToken
-import goauth.AuthorizationCode
-import goauth.Client
-import goauth.Credentials
-import goauth.ResourceOwner
+import uk.co.pragmaticdevelopers.gate.AccessToken
+import uk.co.pragmaticdevelopers.gate.AuthorizationCode
+import uk.co.pragmaticdevelopers.gate.Client
+import uk.co.pragmaticdevelopers.gate.Credentials
+import uk.co.pragmaticdevelopers.gate.ResourceOwner
 import groovy.json.JsonSlurper
 
-import static goauth.Client.Type.CONFIDENTIAL
+import static uk.co.pragmaticdevelopers.gate.Client.Type.CONFIDENTIAL
 import static groovyx.net.http.ContentType.URLENC
-import static java.lang.Enum.valueOf
 
 this.metaClass.mixin(Hooks)
 this.metaClass.mixin(EN)
