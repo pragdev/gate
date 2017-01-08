@@ -1,4 +1,6 @@
-package uk.co.pragmaticdevelopers.gate
+package uk.co.pragmaticdevelopers.gate.extension
+
+import uk.co.pragmaticdevelopers.gate.Credentials
 
 import javax.servlet.http.HttpServletRequest
 

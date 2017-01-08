@@ -34,7 +34,7 @@ public class AccessRequestController extends HttpServlet {
             def (tokenName, tokenValue) = token.describe()
 
             response.status = SC_MOVED_TEMPORARILY
-            response.setHeader('Location', "$redirectUri#${tokenName}=${tokenValue}&token_type=example&expires_in=3600")
+            response['Location'] = "$redirectUri#${tokenName}=${tokenValue}&token_type=example&expires_in=3600"
 
         } catch (EntityNotFound ex) {
             response.status = SC_NOT_FOUND

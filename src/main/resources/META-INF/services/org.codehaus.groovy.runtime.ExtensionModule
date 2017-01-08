@@ -1,4 +1,4 @@
 moduleName=pattern-extension
 moduleVersion=1.0
-extensionClasses=uk.co.pragmaticdevelopers.gate.HttpServletRequestExtension,uk.co.pragmaticdevelopers.gate.extensions.EntityExtension
-staticExtensionClasses=uk.co.pragmaticdevelopers.gate.extensions.StaticEntityExtension
+extensionClasses=uk.co.pragmaticdevelopers.gate.extension.HttpServletRequestExtension,uk.co.pragmaticdevelopers.gate.extension.EntityExtension,uk.co.pragmaticdevelopers.gate.extension.HttpServletResponseExtension
+staticExtensionClasses=uk.co.pragmaticdevelopers.gate.extension.StaticEntityExtension

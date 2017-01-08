@@ -1,4 +1,4 @@
-package uk.co.pragmaticdevelopers.gate.extensions
+package uk.co.pragmaticdevelopers.gate.extension
 
 import com.google.appengine.api.datastore.Entity
 import com.google.appengine.api.datastore.Key

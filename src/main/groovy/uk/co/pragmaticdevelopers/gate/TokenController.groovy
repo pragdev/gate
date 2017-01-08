@@ -35,8 +35,8 @@ public class TokenController extends HttpServlet {
 
             def token = security.issueAccessToken(tokenRequest, credentials)
 
-            response.setHeader('Cache-Control', 'no-store')
-            response.setHeader('Pragma', 'no-cache')
+            response['Cache-Control'] = 'no-store'
+            response['Pragma'] = 'no-cache'
 
             response.contentType = 'application/json'
             response.writer << presenter.present(token)

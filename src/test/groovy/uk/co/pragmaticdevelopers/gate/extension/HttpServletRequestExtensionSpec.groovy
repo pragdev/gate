@@ -1,6 +1,8 @@
-package uk.co.pragmaticdevelopers.gate
+package uk.co.pragmaticdevelopers.gate.extension
 
 import spock.lang.Specification
+import uk.co.pragmaticdevelopers.gate.Credentials
+import uk.co.pragmaticdevelopers.gate.extension.HttpServletRequestExtension
 
 import javax.servlet.http.HttpServletRequest
 

@@ -32,13 +32,13 @@ public class AuthorizationController extends HttpServlet {
 
             AccessRequest accessRequest = security.issueAccessRequest(grantRequest, credentials)
 
-            response.contentType = 'application/json'
-            response.status = SC_OK
             def builder = new JsonBuilder(accessRequest)
             response.writer << builder.toString()
 
-            response.setHeader 'Cache-Control', 'no-store'
-            response.setHeader 'Pragma', 'no-cache'
+            response.contentType = 'application/json'
+            response.status = SC_OK
+            response['Cache-Control'] = 'no-store'
+            response['Pragma'] = 'no-cache'
 
         } catch (InvalidCredentialsException ex) {
             log.info "The credentials ($ex.credentials) are not valid"
