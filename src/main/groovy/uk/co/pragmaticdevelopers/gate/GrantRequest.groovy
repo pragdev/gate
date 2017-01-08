@@ -14,7 +14,7 @@ abstract class GrantRequest {
 
     protected abstract void type()
 
-    protected abstract AccessRequest makeAccessRequest(Map args)
+    abstract AccessRequest makeAccessRequest(Map args)
 
     abstract boolean isValidType()
 }

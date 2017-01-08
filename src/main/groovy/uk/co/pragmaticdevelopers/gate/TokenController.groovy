@@ -1,7 +1,7 @@
 package uk.co.pragmaticdevelopers.gate
 
-import uk.co.pragmaticdevelopers.gate.httpconverter.AccessTokenRequestConverter
 import groovy.util.logging.Log
+import uk.co.pragmaticdevelopers.gate.httpconverter.AccessTokenRequestConverter
 import uk.co.pragmaticdevelopers.gate.presenter.Presenter
 
 import javax.servlet.ServletConfig

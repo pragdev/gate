@@ -1,11 +1,11 @@
 package uk.co.pragmaticdevelopers.gate
 
 import com.google.appengine.api.datastore.DatastoreServiceFactory
-import uk.co.pragmaticdevelopers.gate.factory.TokenFactory
 import groovy.util.logging.Log
 import uk.co.pragmaticdevelopers.gate.factory.AccessRequestFactory
 import uk.co.pragmaticdevelopers.gate.factory.AccessTokenRequestFactory
 import uk.co.pragmaticdevelopers.gate.factory.GrantRequestFactory
+import uk.co.pragmaticdevelopers.gate.factory.TokenFactory
 import uk.co.pragmaticdevelopers.gate.httpconverter.AccessTokenRequestConverter
 import uk.co.pragmaticdevelopers.gate.httpconverter.GrantConverter
 import uk.co.pragmaticdevelopers.gate.presenter.Presenter

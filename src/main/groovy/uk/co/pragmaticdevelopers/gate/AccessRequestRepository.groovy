@@ -1,6 +1,9 @@
 package uk.co.pragmaticdevelopers.gate
 
-import com.google.appengine.api.datastore.*
+import com.google.appengine.api.datastore.DatastoreService
+import com.google.appengine.api.datastore.DatastoreServiceFactory
+import com.google.appengine.api.datastore.Entity
+import com.google.appengine.api.datastore.Query
 import groovy.transform.TupleConstructor
 import uk.co.pragmaticdevelopers.gate.factory.AccessRequestFactory
 
@@ -27,11 +30,6 @@ class AccessRequestRepository {
         accessRequest
     }
 
-    private Key asKey(String param, String kind) {
-        def id = URLEncoder.encode(param, 'UTF-8')
-        KeyFactory.createKey(kind, id)
-    }
-
     boolean exists(String id) {
         findAccessRequestBy id
     }
@@ -40,8 +38,8 @@ class AccessRequestRepository {
         def entity = findAccessRequestBy id
         if (!entity) return null
 
-        def clientId = entity.getProperty('client').toString()
-        def name = entity.getProperty('resourceOwner').toString()
+        def clientId = entity['client'].toString()
+        def name = entity['resourceOwner'].toString()
         def resourceOwner = resourceOwnerRepository.findBy name
         def client = clientsRepository.findBy clientId
 
@@ -50,7 +48,7 @@ class AccessRequestRepository {
 
     private Entity findAccessRequestBy(String id) {
         def query = datastore.prepare new Query(AccessRequest.simpleName).setFilter(new Query.FilterPredicate('id', IN, [id]))
-        query.asSingleEntity() ?: null
+        query.asSingleEntity()
     }
 
 }

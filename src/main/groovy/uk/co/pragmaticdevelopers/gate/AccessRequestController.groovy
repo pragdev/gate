@@ -1,7 +1,7 @@
 package uk.co.pragmaticdevelopers.gate
 
-import uk.co.pragmaticdevelopers.gate.flow.implicit.ImplicitFlowAccessRequest
 import groovy.json.JsonSlurper
+import uk.co.pragmaticdevelopers.gate.flow.implicit.ImplicitFlowAccessRequest
 
 import javax.servlet.ServletConfig
 import javax.servlet.ServletException

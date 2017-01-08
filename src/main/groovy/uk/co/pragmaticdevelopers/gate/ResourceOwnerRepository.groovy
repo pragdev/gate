@@ -30,11 +30,15 @@ class ResourceOwnerRepository {
         def entity = findResourceOwnerBy username
         if (!entity) return null
 
-        new ResourceOwner(entity.getProperty('username').toString(), entity.getProperty('password').toString(), entity.getProperty('displayName').toString())
+        new ResourceOwner(
+                username: entity['username'],
+                password: entity['password'],
+                displayName: entity['displayName']
+        )
     }
 
     private Entity findResourceOwnerBy(String username) {
         def query = datastore.prepare new Query(ResourceOwner.simpleName).setFilter(new Query.FilterPredicate('username', IN, [username]))
-        query.asSingleEntity() ?: null
+        query.asSingleEntity()
     }
 }

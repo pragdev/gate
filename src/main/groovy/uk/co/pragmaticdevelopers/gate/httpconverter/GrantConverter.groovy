@@ -1,10 +1,10 @@
 package uk.co.pragmaticdevelopers.gate.httpconverter
 
 import uk.co.pragmaticdevelopers.gate.AnnotationUtil
-import uk.co.pragmaticdevelopers.gate.factory.GrantRequestFactory
 import uk.co.pragmaticdevelopers.gate.InvalidResponseTypeException
 import uk.co.pragmaticdevelopers.gate.MissingQueryParamException
 import uk.co.pragmaticdevelopers.gate.Required
+import uk.co.pragmaticdevelopers.gate.factory.GrantRequestFactory
 
 import javax.servlet.http.HttpServletRequest
 

@@ -1,6 +1,9 @@
 package uk.co.pragmaticdevelopers.gate
 
-import com.google.appengine.api.datastore.*
+import com.google.appengine.api.datastore.DatastoreService
+import com.google.appengine.api.datastore.DatastoreServiceFactory
+import com.google.appengine.api.datastore.Entity
+import com.google.appengine.api.datastore.Query
 import groovy.transform.TupleConstructor
 
 import static com.google.appengine.api.datastore.Query.FilterOperator.IN
@@ -23,11 +26,6 @@ class ClientRepository {
         client
     }
 
-    private Key asKey(String param, String kind) {
-        def id = URLEncoder.encode(param, 'UTF-8')
-        KeyFactory.createKey(kind, id)
-    }
-
     boolean exists(String id) {
         findClientBy id
     }
@@ -37,16 +35,16 @@ class ClientRepository {
         if (!entity) return null
 
         new Client(
-                id: entity.getProperty('id').toString(),
-                secret: entity.getProperty('secret').toString(),
-                name: entity.getProperty('name').toString(),
-                redirectionUri: new URI(entity.getProperty('redirectionUri').toString()),
-                type: entity.getProperty('type').toString(),
+                id: entity['id'],
+                secret: entity['secret'],
+                name: entity['name'],
+                redirectionUri: new URI(entity['redirectionUri']),
+                type: entity['type'],
         )
     }
 
     private Entity findClientBy(String id) {
         def query = datastore.prepare new Query(Client.simpleName).setFilter(new Query.FilterPredicate('id', IN, [id]))
-        query.asSingleEntity() ?: null
+        query.asSingleEntity()
     }
 }

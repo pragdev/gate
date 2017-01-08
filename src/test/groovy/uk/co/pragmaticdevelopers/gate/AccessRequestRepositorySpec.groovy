@@ -61,7 +61,7 @@ class AccessRequestRepositorySpec extends Specification {
         def preparedQuery = datastoreService.prepare(new Query(AccessRequest.simpleName))
         preparedQuery.countEntities(withLimit(10)) == 1
         def entity = preparedQuery.asSingleEntity()
-        entity.getProperty('type') == 'ImplicitFlowAccessRequest'
+        entity['type'] == 'ImplicitFlowAccessRequest'
     }
 
     def 'should store an AuthorizationCodeAccessRequest'() {
@@ -75,7 +75,7 @@ class AccessRequestRepositorySpec extends Specification {
         def preparedQuery = datastoreService.prepare(new Query(AccessRequest.simpleName))
         preparedQuery.countEntities(withLimit(10)) == 1
         def entity = preparedQuery.asSingleEntity()
-        entity.getProperty('type') == 'AuthorizationCodeAccessRequest'
+        entity['type'] == 'AuthorizationCodeAccessRequest'
     }
 
     def 'should find an ImplicitFlowAccessRequest'() {

@@ -43,6 +43,6 @@ class TokenRepository {
         def query = datastore.prepare new Query(Token.simpleName)
                 .setFilter(filter)
 
-        query.asSingleEntity() ?: null
+        query.asSingleEntity()
     }
 }

@@ -85,6 +85,6 @@ class ClientsControllerSpec extends Specification {
         controller.doPost(request, response)
 
         then:
-        1 * response.setContentType("application/json")
+        1 * response.setContentType('application/json')
     }
 }

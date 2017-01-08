@@ -15,7 +15,7 @@ class ImplicitGrantRequest extends GrantRequest {
     }
 
     @Override
-    protected AccessRequest makeAccessRequest(Map args) {
+    AccessRequest makeAccessRequest(Map args) {
         return new ImplicitFlowAccessRequest(client: args.client, resourceOwner: args.resourceOwner)
     }
 }

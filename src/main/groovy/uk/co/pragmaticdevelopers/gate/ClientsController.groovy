@@ -1,6 +1,5 @@
 package uk.co.pragmaticdevelopers.gate
 
-import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log
 import uk.co.pragmaticdevelopers.gate.presenter.Presenter

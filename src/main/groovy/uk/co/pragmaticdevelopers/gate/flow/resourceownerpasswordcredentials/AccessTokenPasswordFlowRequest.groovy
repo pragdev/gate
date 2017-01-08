@@ -1,9 +1,9 @@
 package uk.co.pragmaticdevelopers.gate.flow.resourceownerpasswordcredentials
 
+import groovy.transform.Canonical
 import uk.co.pragmaticdevelopers.gate.AccessTokenRequest
 import uk.co.pragmaticdevelopers.gate.Credentials
 import uk.co.pragmaticdevelopers.gate.Security
-import groovy.transform.Canonical
 
 @Canonical
 class AccessTokenPasswordFlowRequest extends AccessTokenRequest {

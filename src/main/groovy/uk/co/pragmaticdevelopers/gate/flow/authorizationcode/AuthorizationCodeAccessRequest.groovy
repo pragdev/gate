@@ -1,7 +1,7 @@
 package uk.co.pragmaticdevelopers.gate.flow.authorizationcode
 
-import uk.co.pragmaticdevelopers.gate.AccessRequest
 import groovy.transform.Canonical
+import uk.co.pragmaticdevelopers.gate.AccessRequest
 import uk.co.pragmaticdevelopers.gate.AuthorizationCode
 
 @Canonical

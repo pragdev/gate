@@ -1,7 +1,7 @@
 package uk.co.pragmaticdevelopers.gate.presenter
 
-import uk.co.pragmaticdevelopers.gate.AccessToken
 import groovy.json.JsonBuilder
+import uk.co.pragmaticdevelopers.gate.AccessToken
 import uk.co.pragmaticdevelopers.gate.Client
 
 class Presenter {

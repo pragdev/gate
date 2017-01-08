@@ -14,7 +14,7 @@ class AuthorizationCodeGrantRequest extends GrantRequest {
     }
 
     @Override
-    protected AuthorizationCodeAccessRequest makeAccessRequest(Map args) {
+    AuthorizationCodeAccessRequest makeAccessRequest(Map args) {
         return new AuthorizationCodeAccessRequest(client: args.client, resourceOwner: args.resourceOwner)
     }
 }

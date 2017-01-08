@@ -1,11 +1,11 @@
 package uk.co.pragmaticdevelopers.gate.flow.authorizationcode
 
-import uk.co.pragmaticdevelopers.gate.AccessTokenRequest
-import uk.co.pragmaticdevelopers.gate.Credentials
-import uk.co.pragmaticdevelopers.gate.Security
 import groovy.transform.Canonical
 import groovy.transform.TupleConstructor
+import uk.co.pragmaticdevelopers.gate.AccessTokenRequest
+import uk.co.pragmaticdevelopers.gate.Credentials
 import uk.co.pragmaticdevelopers.gate.Required
+import uk.co.pragmaticdevelopers.gate.Security
 
 @TupleConstructor
 @Canonical

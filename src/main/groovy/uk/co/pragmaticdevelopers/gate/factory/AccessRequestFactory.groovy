@@ -20,16 +20,16 @@ class AccessRequestFactory {
                 return new ImplicitFlowAccessRequest(
                         client: client,
                         resourceOwner: resourceOwner,
-                        id: entity.getProperty('id').toString(),
-                        status: entity.getProperty('status').toString()
+                        id: entity['id'],
+                        status: entity['status']
                 )
                 break
             case 'AuthorizationCodeAccessRequest':
                 return new AuthorizationCodeAccessRequest(
                         client: client,
                         resourceOwner: resourceOwner,
-                        id: entity.getProperty('id').toString(),
-                        status: entity.getProperty('status').toString()
+                        id: entity['id'],
+                        status: entity['status']
                 )
                 break
             default:
