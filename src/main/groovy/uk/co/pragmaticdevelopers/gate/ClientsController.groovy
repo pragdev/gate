@@ -3,6 +3,7 @@ package uk.co.pragmaticdevelopers.gate
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log
+import uk.co.pragmaticdevelopers.gate.presenter.Presenter
 
 import javax.servlet.ServletConfig
 import javax.servlet.ServletException
@@ -14,10 +15,12 @@ import javax.servlet.http.HttpServletResponse
 class ClientsController extends HttpServlet {
 
     Security security
+    Presenter presenter
 
     @Override
     void init(ServletConfig config) throws ServletException {
         security = config.servletContext.getAttribute('security')
+        presenter = config.servletContext.getAttribute('presenter')
     }
 
     void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -28,13 +31,7 @@ class ClientsController extends HttpServlet {
                 type: json.type.toUpperCase()
         )
 
-        JsonBuilder builder = new JsonBuilder()
-        builder {
-            id client.id
-            secret client.secret
-        }
-
         response.contentType = 'application/json'
-        response.writer << builder.toString()
+        response.writer << presenter.present(client)
     }
 }

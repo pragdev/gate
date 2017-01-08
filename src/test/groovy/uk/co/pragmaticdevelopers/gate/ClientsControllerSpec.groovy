@@ -2,6 +2,7 @@ package uk.co.pragmaticdevelopers.gate
 
 import groovy.json.JsonSlurper
 import spock.lang.Specification
+import uk.co.pragmaticdevelopers.gate.presenter.Presenter
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -13,7 +14,7 @@ class ClientsControllerSpec extends Specification {
     StringWriter responseBody
 
     def setup() {
-        controller = new ClientsController(security: Mock(Security))
+        controller = new ClientsController(security: Mock(Security), presenter: new Presenter())
 
         responseBody = new StringWriter()
         def writer = new PrintWriter(responseBody)
