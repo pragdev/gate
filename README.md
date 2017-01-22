@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/pragdev/goauth.svg?branch=master)](https://travis-ci.org/pragdev/gate)
+[![Build Status](https://travis-ci.org/pragdev/gate.svg?branch=master)](https://travis-ci.org/pragdev/gate)
 
 
 # gate
