@@ -14,7 +14,7 @@ class HttpServletRequestExtension {
         !username || !password ? null : new Credentials(username, password)
     }
 
-    Credentials extractCredentialsFromHeader() {
+    Credentials extractBasicCredentials() {
         def header = getHeader('Authorization')?.minus 'Basic '
         if (!header) return null
 
@@ -35,5 +35,4 @@ class HttpServletRequestExtension {
             map
         }
     }
-
 }

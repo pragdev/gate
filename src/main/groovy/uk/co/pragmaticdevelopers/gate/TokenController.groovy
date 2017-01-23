@@ -31,15 +31,12 @@ public class TokenController extends HttpServlet {
         try {
             def tokenRequest = converter.convert request
             def credentials = request.extractCredentialsFromBody()
-            if (!credentials) credentials = request.extractCredentialsFromHeader()
+            if (!credentials) credentials = request.extractBasicCredentials()
 
             def token = security.issueAccessToken(tokenRequest, credentials)
 
-            response['Cache-Control'] = 'no-store'
-            response['Pragma'] = 'no-cache'
-
-            response.contentType = 'application/json'
-            response.writer << presenter.present(token)
+            response.noCache()
+            response.sendJson(token, presenter)
         } catch (MissingQueryParamException ex) {
             response.sendError(SC_BAD_REQUEST, 'missing required param')
         }

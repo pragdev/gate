@@ -1,6 +1,7 @@
 package uk.co.pragmaticdevelopers.gate.presenter
 
 import groovy.json.JsonBuilder
+import uk.co.pragmaticdevelopers.gate.AccessRequest
 import uk.co.pragmaticdevelopers.gate.AccessToken
 import uk.co.pragmaticdevelopers.gate.Client
 
@@ -24,6 +25,11 @@ class Presenter {
             secret client.secret
         }
 
+        builder.toString()
+    }
+
+    String present(AccessRequest accessRequest) {
+        def builder = new JsonBuilder(accessRequest)
         builder.toString()
     }
 }

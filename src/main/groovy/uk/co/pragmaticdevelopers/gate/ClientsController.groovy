@@ -30,7 +30,6 @@ class ClientsController extends HttpServlet {
                 type: json.type.toUpperCase()
         )
 
-        response.contentType = 'application/json'
-        response.writer << presenter.present(client)
+        response.sendJson(client, presenter)
     }
 }

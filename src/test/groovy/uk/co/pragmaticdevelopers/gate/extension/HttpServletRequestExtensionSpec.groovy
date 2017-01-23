@@ -2,7 +2,6 @@ package uk.co.pragmaticdevelopers.gate.extension
 
 import spock.lang.Specification
 import uk.co.pragmaticdevelopers.gate.Credentials
-import uk.co.pragmaticdevelopers.gate.extension.HttpServletRequestExtension
 
 import javax.servlet.http.HttpServletRequest
 
@@ -18,7 +17,7 @@ class HttpServletRequestExtensionSpec extends Specification {
         }
 
         when:
-        def credentials = extension.extractCredentialsFromHeader request
+        def credentials = extension.extractBasicCredentials request
 
         then:
         credentials == new Credentials('myapp', 'test')
@@ -32,7 +31,7 @@ class HttpServletRequestExtensionSpec extends Specification {
         }
 
         expect:
-        !extension.extractCredentialsFromHeader(request)
+        !extension.extractBasicCredentials(request)
 
         where:
         header << ['', null, 'Basic wrong9hjformat', 'Basic ', 'wrong']

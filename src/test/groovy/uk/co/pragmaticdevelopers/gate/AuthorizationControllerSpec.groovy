@@ -6,6 +6,7 @@ import spock.lang.Specification
 import spock.lang.Subject
 import uk.co.pragmaticdevelopers.gate.factory.GrantRequestFactory
 import uk.co.pragmaticdevelopers.gate.httpconverter.GrantConverter
+import uk.co.pragmaticdevelopers.gate.presenter.Presenter
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -21,6 +22,7 @@ class AuthorizationControllerSpec extends Specification {
     StringWriter responseBody
 
     def setup() {
+        authorizationController.presenter = new Presenter()
         authorizationController.security = Mock Security
         authorizationController.converter = new GrantConverter(grantRequestFactory: new GrantRequestFactory())
         request.getQueryString() >> 'response_type=token&client_id=myid'
@@ -76,14 +78,14 @@ class AuthorizationControllerSpec extends Specification {
 
     def "should respond with a new access request when client and resource owner are correctly identified"() {
         given:
-        this.request.getHeader(_) >> "Basic ${"user:pass".bytes.encodeBase64().toString()}"
+        request.getHeader(_) >> "Basic ${"user:pass".bytes.encodeBase64().toString()}"
         def client = new Client(name: 'client')
         def owner = new ResourceOwner(displayName: 'owner')
         def accessRequest = new ImplicitFlowAccessRequest(id: "myid", client: client, resourceOwner: owner)
         authorizationController.security.issueAccessRequest(*_) >> accessRequest
 
         when:
-        authorizationController.doGet(this.request, response)
+        authorizationController.doGet(request, response)
 
         then:
         1 * response.setStatus(SC_OK)
