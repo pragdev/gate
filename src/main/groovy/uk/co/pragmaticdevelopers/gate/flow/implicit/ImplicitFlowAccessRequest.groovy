@@ -8,7 +8,7 @@ import uk.co.pragmaticdevelopers.gate.AccessToken
 class ImplicitFlowAccessRequest extends AccessRequest {
 
     @Override
-    AccessToken makeToken() {
+    AccessToken generateToken() {
         new AccessToken()
     }
 }

@@ -35,6 +35,11 @@ class Security {
         if (!storedClient.accept(credentials)) throw new InvalidCredentialsException(credentials)
     }
 
+    AccessToken register(ResourceOwner owner) {
+        resourceOwnerRepository.store owner
+        tokenRepository.store new AccessToken()
+    }
+
     Client register(Client client) {
         client.id = UUID.randomUUID().toString()
         client.secret = UUID.randomUUID().toString()
@@ -66,9 +71,10 @@ class Security {
         if (!accessRequestRepository.exists(accessRequest.id)) throw new EntityNotFound()
 
         def storedAccessRequest = accessRequestRepository.findBy accessRequest.id
-        storedAccessRequest.status = GRANTED
+        def token = storedAccessRequest.grant()
         accessRequestRepository.store storedAccessRequest
-        storedAccessRequest.makeToken()
+
+        return token
     }
 
     URI redirectUriFor(AccessRequest accessRequest) {

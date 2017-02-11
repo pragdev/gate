@@ -18,7 +18,7 @@ class AccessTokenRequestConverter {
         def uri = parameter ? new URI(parameter) : null
 
         def grantType = request.getParameter('grant_type')
-        if (!grantType) throw new MissingQueryParamException()
+        if (!grantType) throw new MissingQueryParamException("grant_type is missing")
 
         def accessTokenRequest = factory.make(
                 authorizationCode: request.getParameter('code'),

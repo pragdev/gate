@@ -5,7 +5,7 @@ import groovy.transform.TupleConstructor
 
 @Canonical
 @TupleConstructor
-class ResourceOwner {
+class ResourceOwner implements Serializable {
     String username
     String password
     String displayName

@@ -1,6 +1,7 @@
 package uk.co.pragmaticdevelopers.gate
 
-abstract class Token {
+abstract class Token implements Serializable {
+
     String value
     Date issuedOn
     Long expiresIn

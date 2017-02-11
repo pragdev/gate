@@ -2,6 +2,7 @@ package uk.co.pragmaticdevelopers.gate
 
 import com.google.appengine.api.datastore.DatastoreService
 import com.google.appengine.api.datastore.DatastoreServiceFactory
+import com.google.appengine.api.datastore.EmbeddedEntity
 import com.google.appengine.api.datastore.Entity
 import com.google.appengine.api.datastore.Query
 import groovy.transform.TupleConstructor
@@ -25,6 +26,15 @@ class AccessRequestRepository {
         entity['client'] = accessRequest.client?.id
         entity['resourceOwner'] = accessRequest.resourceOwner?.username
         entity['type'] = accessRequest.class.simpleName
+
+//        if(accessRequest.token) {
+//            def tokenEntity = new EmbeddedEntity()
+//            tokenEntity.setProperty('value', accessRequest.token.value)
+//            tokenEntity.setProperty('issuedOn', accessRequest.token.issuedOn.time)
+//            tokenEntity.setProperty('expiresIn', accessRequest.token.expiresIn)
+//            tokenEntity.setProperty('type', accessRequest.token.class.simpleName)
+//            entity['token'] = tokenEntity
+//        }
 
         datastore.put entity
         accessRequest

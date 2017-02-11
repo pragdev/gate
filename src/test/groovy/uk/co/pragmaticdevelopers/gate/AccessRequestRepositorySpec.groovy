@@ -2,21 +2,25 @@ package uk.co.pragmaticdevelopers.gate
 
 import com.google.appengine.api.datastore.DatastoreService
 import com.google.appengine.api.datastore.DatastoreServiceFactory
+import com.google.appengine.api.datastore.EmbeddedEntity
 import com.google.appengine.api.datastore.Query
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper
-import uk.co.pragmaticdevelopers.gate.flow.authorizationcode.AuthorizationCodeAccessRequest
-import uk.co.pragmaticdevelopers.gate.flow.implicit.ImplicitFlowAccessRequest
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.lang.Unroll
 import uk.co.pragmaticdevelopers.gate.factory.AccessRequestFactory
+import uk.co.pragmaticdevelopers.gate.flow.authorizationcode.AuthorizationCodeAccessRequest
+import uk.co.pragmaticdevelopers.gate.flow.implicit.ImplicitFlowAccessRequest
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit
 import static uk.co.pragmaticdevelopers.gate.Client.Type.CONFIDENTIAL
 
 class AccessRequestRepositorySpec extends Specification {
 
-    @Subject AccessRequestRepository repository
+    @Subject
+    AccessRequestRepository repository
     LocalServiceTestHelper helper
     DatastoreService datastoreService
     Client client
@@ -50,55 +54,60 @@ class AccessRequestRepositorySpec extends Specification {
         helper.tearDown();
     }
 
-    def 'should store an ImplicitFlowAccessRequest'() {
-        given:
-        def implicitFlowAccessRequest = new ImplicitFlowAccessRequest(client: client, resourceOwner: resourceOwner)
+    @Unroll
+    def 'should store an #type.simpleName'() {
+        AccessRequest accessRequest = type.newInstance(client: client, resourceOwner: resourceOwner)
 
         when:
-        repository.store implicitFlowAccessRequest
+        repository.store accessRequest
 
         then:
         def preparedQuery = datastoreService.prepare(new Query(AccessRequest.simpleName))
         preparedQuery.countEntities(withLimit(10)) == 1
         def entity = preparedQuery.asSingleEntity()
-        entity['type'] == 'ImplicitFlowAccessRequest'
+        entity['type'] == type.simpleName
+
+        where:
+        type << [ImplicitFlowAccessRequest, AuthorizationCodeAccessRequest]
     }
 
-    def 'should store an AuthorizationCodeAccessRequest'() {
-        given:
-        def authorizationCodeAccessRequest = new AuthorizationCodeAccessRequest(client: client, resourceOwner: resourceOwner)
+    @Ignore
+    @Unroll
+    def 'should store an #type.simpleName with a token'() {
+        AccessRequest accessRequest = type.newInstance(client: client, resourceOwner: resourceOwner, token: token)
 
         when:
-        repository.store authorizationCodeAccessRequest
+        repository.store accessRequest
 
         then:
         def preparedQuery = datastoreService.prepare(new Query(AccessRequest.simpleName))
         preparedQuery.countEntities(withLimit(10)) == 1
         def entity = preparedQuery.asSingleEntity()
-        entity['type'] == 'AuthorizationCodeAccessRequest'
+        entity['type'] == type.simpleName
+        entity['token'] in EmbeddedEntity
+        EmbeddedEntity tokenEntity = entity['token']
+        tokenEntity.getProperty('value') =~ /[A-z09-]+/
+
+        where:
+        type                           | token
+        ImplicitFlowAccessRequest      | new AccessToken()
+        AuthorizationCodeAccessRequest | new AuthorizationCode()
     }
 
-    def 'should find an ImplicitFlowAccessRequest'() {
+    @Unroll
+    def 'should find an #type.simpleName'() {
         given:
-        def implicitFlowAccessRequest = new ImplicitFlowAccessRequest(client: client, resourceOwner: resourceOwner)
-        repository.store implicitFlowAccessRequest
+        AccessRequest accessRequest = type.newInstance(client: client, resourceOwner: resourceOwner)
+        repository.store accessRequest
 
         when:
-        ImplicitFlowAccessRequest storedAccessRequest = repository.findBy implicitFlowAccessRequest.id
+        AccessRequest storedAccessRequest = repository.findBy accessRequest.id
 
         then:
-        storedAccessRequest == implicitFlowAccessRequest
+        storedAccessRequest == accessRequest
+
+        where:
+        type << [ImplicitFlowAccessRequest, AuthorizationCodeAccessRequest]
     }
 
-    def 'should find an AuthorizationCodeAccessRequest'() {
-        given:
-        def authorizationCodeAccessRequest = new AuthorizationCodeAccessRequest(client: client, resourceOwner: resourceOwner)
-        repository.store authorizationCodeAccessRequest
-
-        when:
-        AuthorizationCodeAccessRequest storedAccessRequest = repository.findBy authorizationCodeAccessRequest.id
-
-        then:
-        storedAccessRequest == authorizationCodeAccessRequest
-    }
 }
