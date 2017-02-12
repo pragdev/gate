@@ -15,77 +15,73 @@ enum AuthenticationFlow {
 
 @Log
 class Security {
-    ResourceOwnerRepository resourceOwnerRepository
-    ClientRepository clientsRepository
-    AccessRequestRepository accessRequestRepository
     AccessRequestFactory accessRequestFactory
-    TokenRepository tokenRepository
+    OAuthEvents events
+    Context context
 
     void authenticateResourceOwner(Credentials credentials) throws InvalidCredentialsException {
-        if (!resourceOwnerRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
+        ResourceOwner storedResourceOwner = context.findResourceOwner(credentials)
 
-        ResourceOwner storedResourceOwner = resourceOwnerRepository.findBy credentials.username
+        if (!storedResourceOwner) throw new InvalidCredentialsException(credentials)
         if (!storedResourceOwner?.accept(credentials)) throw new InvalidCredentialsException(credentials)
     }
 
     void authenticateClient(Credentials credentials) throws InvalidCredentialsException {
-        if (!clientsRepository.exists(credentials.username)) throw new InvalidCredentialsException(credentials)
+        Client storedClient = context.findClient(credentials)
 
-        Client storedClient = clientsRepository.findBy(credentials.username)
+        if (!storedClient) throw new InvalidCredentialsException(credentials)
         if (!storedClient.accept(credentials)) throw new InvalidCredentialsException(credentials)
     }
 
     AccessToken register(ResourceOwner owner) {
-        resourceOwnerRepository.store owner
-        tokenRepository.store new AccessToken()
+        events.onNewResourceOwner(owner, new AccessToken())
     }
 
     Client register(Client client) {
         client.id = UUID.randomUUID().toString()
         client.secret = UUID.randomUUID().toString()
 
-        clientsRepository.store client
-    }
-
-    Client findClientBy(id) {
-        clientsRepository.findBy id
+        events.onNewClientRegistered(client)
+        return client
     }
 
     ResourceOwner identifyResourceOwnerBy(Credentials credentials) {
         if (!credentials || credentials.incomplete) throw new InvalidCredentialsException(credentials)
 
-        ResourceOwner storedOwner = resourceOwnerRepository.findBy credentials.username
+        ResourceOwner storedOwner = context.findResourceOwner(credentials.username)
         if (!storedOwner?.accept(credentials)) throw new InvalidCredentialsException(credentials)
 
         return storedOwner
     }
 
     AccessRequest makeAccessRequestFor(Client client, ResourceOwner resourceOwner, GrantRequest grantRequest) {
-        // TODO test store is called
+        // TODO test onNewAccessRequest is called
         AccessRequest accessRequest = accessRequestFactory.make(client: client, resourceOwner: resourceOwner, grantRequest: grantRequest)
-        accessRequestRepository.store accessRequest
+        events.onNewAccessRequest(accessRequest)
+        return accessRequest
     }
 
     Token grantAccess(AccessRequest accessRequest) {
         if (!(accessRequest.status in [GRANTED, DENIED])) throw new InvalidStatusException()
-        if (!accessRequestRepository.exists(accessRequest.id)) throw new EntityNotFound()
+        def storedAccessRequest = context.findAccessRequest(accessRequest)
 
-        def storedAccessRequest = accessRequestRepository.findBy accessRequest.id
+        if (!storedAccessRequest) throw new EntityNotFound()
+
         def token = storedAccessRequest.grant()
-        accessRequestRepository.store storedAccessRequest
+        events.onGrantedAccess(storedAccessRequest)
 
         return token
     }
 
     URI redirectUriFor(AccessRequest accessRequest) {
-        def request = accessRequestRepository.findBy accessRequest.id
+        def request = context.findAccessRequest(accessRequest)
         request.client.redirectionUri
     }
 
     AccessRequest issueAccessRequest(GrantRequest grantRequest, Credentials credentials) {
         if (!grantRequest.validType) throw new InvalidResponseTypeException()
 
-        Client client = findClientBy grantRequest.clientId
+        Client client = context.findClientBy grantRequest.clientId
         if (!client) throw new EntityNotFound()
 
         def owner = identifyResourceOwnerBy credentials
@@ -99,15 +95,18 @@ class Security {
         tokenRequest.authenticate credentials, this
         handle tokenRequest
 
-        tokenRepository.store new AccessToken()
+        def token = new AccessToken()
+        events.onAccessTokenIssued(token)
+        return token
     }
 
     def handle(AccessTokenAuthorizationCodeFlowRequest request) {
-        def token = tokenRepository.findBy request.authorizationCode, AuthorizationCode
-        if(!token || token.expired) throw new InvalidTokenException()
+        def token = context.findToken(request.authorizationCode, AuthorizationCode)
+        if (!token || token.expired) throw new InvalidTokenException()
     }
 
     def handle(AccessTokenPasswordFlowRequest request) {}
+
     def handle(AccessTokenClientCredentialsFlowRequest request) {}
 
 }

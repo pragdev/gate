@@ -24,18 +24,27 @@ class ContextListener implements ServletContextListener {
         def resourceOwnerRepository = new ResourceOwnerRepository(datastore: datastoreService)
         def clientsRepository = new ClientRepository(datastore: datastoreService)
         def tokenRepository = new TokenRepository(datastore: datastoreService, tokenFactory: new TokenFactory())
+        def factory = new AccessRequestFactory()
         def accessRequestRepository = new AccessRequestRepository(
                 datastore: datastoreService,
                 resourceOwnerRepository: resourceOwnerRepository,
                 clientsRepository: clientsRepository,
-                accessRequestFactory: new AccessRequestFactory()
+                accessRequestFactory: factory
         )
         def security = new Security(
-                resourceOwnerRepository: resourceOwnerRepository,
-                clientsRepository: clientsRepository,
-                accessRequestRepository: accessRequestRepository,
-                accessRequestFactory: new AccessRequestFactory(),
-                tokenRepository: tokenRepository
+                context: new uk.co.pragmaticdevelopers.gate.appengine.Context (
+                        resourceOwnerRepository: resourceOwnerRepository,
+                        clientsRepository: clientsRepository,
+                        accessRequestRepository: accessRequestRepository,
+                        tokenRepository: tokenRepository
+                ),
+                events: new uk.co.pragmaticdevelopers.gate.appengine.OAuthEvents(
+                        resourceOwnerRepository: resourceOwnerRepository,
+                        clientsRepository: clientsRepository,
+                        accessRequestRepository: accessRequestRepository,
+                        tokenRepository: tokenRepository
+                ),
+                accessRequestFactory: factory
         )
         def grantConverter = new GrantConverter(grantRequestFactory: new GrantRequestFactory())
         def accessTokenRequestConverter = new AccessTokenRequestConverter(factory: new AccessTokenRequestFactory())
