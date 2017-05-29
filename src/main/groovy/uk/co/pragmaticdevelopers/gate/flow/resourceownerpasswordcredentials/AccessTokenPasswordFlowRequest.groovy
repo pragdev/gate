@@ -18,7 +18,7 @@ class AccessTokenPasswordFlowRequest extends AccessTokenRequest {
     }
 
     @Override
-    void authenticate(Credentials credentials, Security security) {
+    def authenticate(Credentials credentials, Security security) {
         security.authenticateResourceOwner credentials
     }
 }

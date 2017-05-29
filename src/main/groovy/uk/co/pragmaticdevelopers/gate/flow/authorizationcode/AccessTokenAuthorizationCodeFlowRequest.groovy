@@ -24,7 +24,7 @@ class AccessTokenAuthorizationCodeFlowRequest extends AccessTokenRequest {
     }
 
     @Override
-    void authenticate(Credentials credentials, Security security) {
+    def authenticate(Credentials credentials, Security security) {
         security.authenticateClient credentials
     }
 }

@@ -1,5 +1,6 @@
 package uk.co.pragmaticdevelopers.gate.appengine
 
+import groovy.util.logging.Log
 import uk.co.pragmaticdevelopers.gate.*
 
 class OAuthEvents implements uk.co.pragmaticdevelopers.gate.OAuthEvents {
@@ -9,7 +10,7 @@ class OAuthEvents implements uk.co.pragmaticdevelopers.gate.OAuthEvents {
     AccessRequestRepository accessRequestRepository
     TokenRepository tokenRepository
 
-    void onAccessTokenIssued(AccessToken token) {
+    void onAccessTokenIssued(AccessToken token, Credentials credentials) {
         tokenRepository.store token
     }
 

@@ -7,4 +7,7 @@ interface Context {
     ResourceOwner findResourceOwner(Credentials credentials)
     AccessRequest findAccessRequest(AccessRequest accessRequest)
     Token findToken(String tokenValue, Class<? extends Token> type)
+
+    AccessToken makeAccessToken(Client client)
+    AccessToken makeAccessToken(ResourceOwner owner)
 }

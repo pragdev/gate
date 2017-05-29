@@ -19,22 +19,28 @@ class Security {
     OAuthEvents events
     Context context
 
-    void authenticateResourceOwner(Credentials credentials) throws InvalidCredentialsException {
+    def authenticateResourceOwner(Credentials credentials) throws InvalidCredentialsException {
         ResourceOwner storedResourceOwner = context.findResourceOwner(credentials)
 
         if (!storedResourceOwner) throw new InvalidCredentialsException(credentials)
         if (!storedResourceOwner?.accept(credentials)) throw new InvalidCredentialsException(credentials)
+
+        return storedResourceOwner
     }
 
-    void authenticateClient(Credentials credentials) throws InvalidCredentialsException {
+    def authenticateClient(Credentials credentials) throws InvalidCredentialsException {
         Client storedClient = context.findClient(credentials)
 
         if (!storedClient) throw new InvalidCredentialsException(credentials)
         if (!storedClient.accept(credentials)) throw new InvalidCredentialsException(credentials)
+
+        return storedClient
     }
 
     AccessToken register(ResourceOwner owner) {
-        events.onNewResourceOwner(owner, new AccessToken())
+        def token = new AccessToken()
+        events.onNewResourceOwner(owner, token)
+        return token
     }
 
     Client register(Client client) {
@@ -92,11 +98,11 @@ class Security {
     AccessToken issueAccessToken(AccessTokenRequest tokenRequest, Credentials credentials) {
         if (!tokenRequest.validType) throw new InvalidGrantTypeException()
 
-        tokenRequest.authenticate credentials, this
+        def authenticatedSubject = tokenRequest.authenticate credentials, this
         handle tokenRequest
 
-        def token = new AccessToken()
-        events.onAccessTokenIssued(token)
+        def token = context.makeAccessToken(authenticatedSubject)
+        events.onAccessTokenIssued(token, credentials)
         return token
     }
 

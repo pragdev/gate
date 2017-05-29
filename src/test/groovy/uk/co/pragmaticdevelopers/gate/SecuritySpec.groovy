@@ -343,6 +343,7 @@ class SecuritySpec extends Specification {
         def client = Mock(Client) { accept(credentials) >> true }
         security.context.findClient(credentials)  >> client
         security.context.findToken('ABC', AuthorizationCode) >> new AuthorizationCode(value: 'ABC')
+        security.context.makeAccessToken( _ as Client ) >> new AccessToken()
 
         when:
         def accessToken = security.issueAccessToken(codeFlowRequest, credentials)

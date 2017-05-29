@@ -14,5 +14,5 @@ abstract class AccessTokenRequest {
     protected abstract void type()
     abstract boolean isValidType()
 
-    abstract void authenticate(Credentials credentials, Security security)
+    abstract def authenticate(Credentials credentials, Security security)
 }

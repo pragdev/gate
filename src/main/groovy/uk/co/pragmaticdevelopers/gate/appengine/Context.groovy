@@ -1,7 +1,9 @@
 package uk.co.pragmaticdevelopers.gate.appengine
 
+import groovy.util.logging.Log
 import uk.co.pragmaticdevelopers.gate.*
 
+@Log
 class Context implements uk.co.pragmaticdevelopers.gate.Context {
 
     ResourceOwnerRepository resourceOwnerRepository
@@ -18,6 +20,7 @@ class Context implements uk.co.pragmaticdevelopers.gate.Context {
     }
 
     ResourceOwner findResourceOwner(String username) {
+        log.info "OAUTH context, searching for resource owner $username"
         resourceOwnerRepository.findBy username
     }
 
@@ -33,5 +36,15 @@ class Context implements uk.co.pragmaticdevelopers.gate.Context {
     Token findToken(String authorizationCode, Class<? extends Token> type) {
         tokenRepository.findBy authorizationCode, AuthorizationCode
 
+    }
+
+    @Override
+    AccessToken makeAccessToken(Client client) {
+        new AccessToken()
+    }
+
+    @Override
+    AccessToken makeAccessToken(ResourceOwner owner) {
+        new AccessToken()
     }
 }
