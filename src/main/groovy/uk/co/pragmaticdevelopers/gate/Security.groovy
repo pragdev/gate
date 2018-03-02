@@ -38,8 +38,7 @@ class Security {
     }
 
     AccessToken register(ResourceOwner owner) {
-        def token = new AccessToken()
-        events.onNewResourceOwner(owner, token)
+        AccessToken token = events.onNewResourceOwner(owner)
         return token
     }
 

@@ -18,8 +18,9 @@ class OAuthEvents implements uk.co.pragmaticdevelopers.gate.OAuthEvents {
         clientsRepository.store client
     }
 
-    void onNewResourceOwner(ResourceOwner owner, AccessToken token) {
+    AccessToken onNewResourceOwner(ResourceOwner owner) {
         resourceOwnerRepository.store owner
+        def token = new AccessToken()
         tokenRepository.store token
     }
 
